@@ -1,0 +1,28 @@
+import hu.levente.fazekas.receiptscanner.data.Currency;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE Receipt (
+id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+name TEXT NOT NULL,
+date INTEGER AS Instant NOT NULL,
+category INTEGER NOT NULL,
+currency TEXT AS Currency NOT NULL,
+description TEXT,
+imageUrl TEXT,
+FOREIGN KEY(category) REFERENCES Category(id)
+);
+
+insertReceipt:
+INSERT OR REPLACE INTO Receipt(id, name, date, category, currency, description, imageUrl)
+VALUES(?,?,?, ?, ?, ?,?);
+
+selectAllReceipt:
+SELECT Receipt.id, Receipt.name, date, Category.name AS category, currency, description, imageUrl
+FROM Receipt
+JOIN Category ON Receipt.category = Category.id;
+
+deleteAll:
+DELETE FROM Receipt;
+
+delete:
+DELETE FROM Receipt WHERE id = :id;
