@@ -75,7 +75,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //SqlDelight
-    implementation(libs.android.driver)
+    implementation(libs.sqlDelight.android.driver)
+    implementation(libs.sqlDelight.primitive.adapters)
+    implementation(libs.sqlDelight.paging3.extensions)
+    implementation(libs.sqlDelight.coroutines.extensions)
 
     //Ktor
     implementation(libs.ktor.client.okhttp)

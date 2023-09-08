@@ -1,6 +1,5 @@
 [versions]
 activity-compose = "1.7.2"
-androidDriver = "2.0.0"
 androidx-junit = "1.1.5"
 espresso-core = "3.5.1"
 jetbrains-kotlinxDatetime = "0.4.0"
@@ -24,7 +23,7 @@ minSdk = "24"
 
 
 [libraries]
-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "androidDriver" }
+
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
@@ -41,6 +40,12 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "jetbrains-kotlinxDatetime" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
+
+sqlDelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
+sqlDelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqlDelight" }
+sqlDelight-paging3-extensions = { module = "app.cash.sqldelight:androidx-paging3-extensions", version.ref = "sqlDelight" }
+sqlDelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
