@@ -1,0 +1,17 @@
+CREATE TABLE LastPrice (
+    itemId INTEGER NOT NULL PRIMARY KEY,
+    lastPrice INTEGER NOT NULL,
+    unit Text NOT NULL
+);
+
+CREATE TRIGGER IF NOT EXISTS lastPrice
+AFTER INSERT ON Item
+FOR EACH ROW
+BEGIN
+INSERT OR REPLACE INTO LastPrice(itemId, lastPrice, unit)
+VALUES (new.itemId,new.price, new.unit);
+END;
+
+selectItemLastPrice:
+SELECT * FROM LastPrice
+WHERE itemId = :itemId;

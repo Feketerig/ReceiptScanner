@@ -1,0 +1,16 @@
+CREATE TABLE ItemCategory(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    color INTEGER
+);
+
+insert:
+INSERT INTO ItemCategory(name, color)
+VALUES( :name, :color);
+
+selectAll:
+SELECT * FROM ItemCategory;
+
+deleteById:
+DELETE FROM ItemCategory
+WHERE id = :id;

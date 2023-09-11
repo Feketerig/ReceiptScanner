@@ -1,16 +1,16 @@
 CREATE TABLE ReceiptTagCrossRef(
-ReceiptId INTEGER NOT NULL,
-TagId INTEGER NOT NULL,
-PRIMARY KEY (ReceiptId, TagId),
-FOREIGN KEY (ReceiptId) REFERENCES Receipt(id),
-FOREIGN KEY (TagId) REFERENCES Receipt(id)
+    ReceiptId INTEGER NOT NULL,
+    TagId INTEGER NOT NULL,
+    PRIMARY KEY (ReceiptId, TagId),
+    FOREIGN KEY (ReceiptId) REFERENCES Receipt(id),
+    FOREIGN KEY (TagId) REFERENCES Receipt(id)
 );
 
 insert:
 INSERT INTO ReceiptTagCrossRef(ReceiptId, TagId)
 VALUES(:ReceiptId, :TagId);
 
-delete:
+deleteById:
 DELETE FROM ReceiptTagCrossRef
 WHERE ReceiptId = :ReceiptId
 AND TagId = :TagId;

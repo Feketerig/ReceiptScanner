@@ -1,6 +1,46 @@
+import kotlinx.datetime.Instant;
+
 CREATE TABLE Item(
-id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-name TEXT NOT NULL,
-count INTEGER NOT NULL,
-price Real NOT NULL
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    itemId INTEGER NOT NULL,
+    count INTEGER NOT NULL,
+    price Real NOT NULL, -- price per measurement unit
+    unit Text NOT NULL, -- measurement unit
+    category INTEGER NOT NULL,
+    date INTEGER AS Instant NOT NULL,
+    FOREIGN KEY(category) REFERENCES ItemCategory(id),
+    FOREIGN KEY(itemId) REFERENCES ItemId(itemId)
 );
+
+insert{
+INSERT OR IGNORE INTO ItemId(name) VALUES (:name);
+
+INSERT INTO Item(itemId, count, price, unit, category, date)
+VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :name),:count,:price,:unit,:category, :date);
+}
+selectAll:
+SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
+FROM Item
+JOIN ItemCategory, ItemId ON
+Item.category = ItemCategory.id AND
+Item.itemId = ItemId.itemId;
+
+selectAllById:
+SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
+FROM Item
+JOIN ItemCategory, ItemId ON
+Item.category = ItemCategory.id AND
+Item.itemId = ItemId.itemId
+WHERE Item.itemId = :itemId;
+
+selectAllByCategory:
+SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
+FROM Item
+JOIN ItemCategory, ItemId ON
+Item.category = ItemCategory.id AND
+Item.itemId = ItemId.itemId
+WHERE Item.category = :categoyId;
+
+deleteById:
+DELETE FROM Item
+WHERE id = :id;
