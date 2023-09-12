@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Receipt Scanner"
 include(":app")
- 
+include(":core")
+include(":core:database")

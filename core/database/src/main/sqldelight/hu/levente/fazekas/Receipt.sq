@@ -1,4 +1,4 @@
-import hu.levente.fazekas.receiptscanner.data.Currency;
+import hu.levente.fazekas.receiptscanner.database.data.Currency;
 import kotlinx.datetime.Instant;
 
 CREATE TABLE Receipt (

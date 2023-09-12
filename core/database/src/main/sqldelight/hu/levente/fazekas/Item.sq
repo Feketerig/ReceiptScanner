@@ -13,11 +13,14 @@ CREATE TABLE Item(
 );
 
 insert{
-INSERT OR IGNORE INTO ItemId(name) VALUES (:name);
+INSERT OR IGNORE INTO ItemId(name) VALUES (:itemName);
+
+INSERT OR IGNORE INTO ItemCategory(name, color) VALUES (:categoryName, :categoryColor);
 
 INSERT INTO Item(itemId, count, price, unit, category, date)
-VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :name),:count,:price,:unit,:category, :date);
+VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),:count,:price,:unit,(SELECT ItemCategory.id FROM ItemCategory WHERE ItemCategory.name = :categoryName), :date);
 }
+
 selectAll:
 SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
 FROM Item
