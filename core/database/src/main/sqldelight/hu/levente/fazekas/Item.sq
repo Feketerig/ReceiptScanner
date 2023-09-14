@@ -1,13 +1,17 @@
+import hu.levente.fazekas.receiptscanner.database.Currency;
 import kotlinx.datetime.Instant;
 
 CREATE TABLE Item(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     itemId INTEGER NOT NULL,
-    count INTEGER NOT NULL,
-    price Real NOT NULL, -- price per measurement unit
-    unit Text NOT NULL, -- measurement unit
+    count INTEGER NOT NULL, --quantity
+    price Real NOT NULL, --price per measurement unit
+    unit Text NOT NULL, --measurement unit
     category INTEGER NOT NULL,
     date INTEGER AS Instant NOT NULL,
+    currency TEXT AS Currency NOT NULL,
+    receiptId INTEGER NOT NULL,
+    FOREIGN KEY(receiptId) REFERENCES Receipt(id),
     FOREIGN KEY(category) REFERENCES ItemCategory(id),
     FOREIGN KEY(itemId) REFERENCES ItemId(itemId)
 );
@@ -17,19 +21,27 @@ INSERT OR IGNORE INTO ItemId(name) VALUES (:itemName);
 
 INSERT OR IGNORE INTO ItemCategory(name, color) VALUES (:categoryName, :categoryColor);
 
-INSERT INTO Item(itemId, count, price, unit, category, date)
-VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),:count,:price,:unit,(SELECT ItemCategory.id FROM ItemCategory WHERE ItemCategory.name = :categoryName), :date);
+INSERT INTO Item(itemId, count, price, unit, category, date, currency, receiptId)
+VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
+:count,
+:price,
+:unit,
+(SELECT ItemCategory.id FROM ItemCategory WHERE ItemCategory.name = :categoryName),
+:date,
+:currency,
+:receiptId
+);
 }
 
 selectAll:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
+SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category, date, currency
 FROM Item
 JOIN ItemCategory, ItemId ON
 Item.category = ItemCategory.id AND
 Item.itemId = ItemId.itemId;
 
 selectAllById:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
+SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category, date, currency
 FROM Item
 JOIN ItemCategory, ItemId ON
 Item.category = ItemCategory.id AND
@@ -44,6 +56,8 @@ Item.category = ItemCategory.id AND
 Item.itemId = ItemId.itemId
 WHERE Item.category = :categoyId;
 
+
+--TODO FIX DELETE
 deleteById:
 DELETE FROM Item
 WHERE id = :id;

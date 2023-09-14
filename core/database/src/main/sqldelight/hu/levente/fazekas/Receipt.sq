@@ -6,16 +6,17 @@ CREATE TABLE Receipt (
     name TEXT NOT NULL,
     date INTEGER AS Instant NOT NULL,
     currency TEXT AS Currency NOT NULL,
+    sumOfPrice INTEGER NOT NULL,
     description TEXT,
-    imageUrl TEXT
+    imageUri TEXT NOT NULL
 );
 
 insert:
-INSERT OR REPLACE INTO Receipt(id, name, date, currency, description, imageUrl)
-VALUES(?,?,?, ?,  ?,?);
+INSERT OR REPLACE INTO Receipt(id, name, date, currency, sumOfPrice, description, imageUri)
+VALUES(?,?,?, ?,  ?,?,?);
 
 selectAll:
-SELECT Receipt.id, Receipt.name, date, currency, description, imageUrl
+SELECT Receipt.id, Receipt.name, date, currency, description, imageUri
 FROM Receipt;
 
 deleteById:

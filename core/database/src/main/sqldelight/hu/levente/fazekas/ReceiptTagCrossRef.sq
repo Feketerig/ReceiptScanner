@@ -10,6 +10,7 @@ insert:
 INSERT INTO ReceiptTagCrossRef(ReceiptId, TagId)
 VALUES(:ReceiptId, :TagId);
 
+--TODO FIX DELETE
 deleteById:
 DELETE FROM ReceiptTagCrossRef
 WHERE ReceiptId = :ReceiptId

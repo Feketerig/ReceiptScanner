@@ -14,6 +14,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
+import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Clock
@@ -28,10 +29,11 @@ class MainActivity : ComponentActivity() {
                 currencyAdapter = EnumColumnAdapter()
             ),
             ItemAdapter = Item.Adapter(
-                dateAdapter = DateAdapter()
+                dateAdapter = DateAdapter(),
+                currencyAdapter = EnumColumnAdapter()
             )
         )
-        db.itemQueries.insert("Tej", "Tejtermék", Color.Blue.toArgb().toLong(),2L, 100.0, "L", Clock.System.now())
+        db.itemQueries.insert("Tej", "Tejtermék", Color.Blue.toArgb().toLong(),2L, 100.0, "L", Clock.System.now(), Currency.HUF, 1)
         setContent {
             ReceiptScannerTheme {
                 // A surface container using the 'background' color from the theme
