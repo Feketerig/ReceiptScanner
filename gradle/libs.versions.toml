@@ -12,7 +12,7 @@ material3 = "1.1.1"
 ui = "1.5.1"
 firebaseCrashlyticsPlugin = "2.9.9"
 kotlin = "1.9.10"
-androidGradlePlugin = "8.2.0-beta03"
+androidGradlePlugin = "8.2.0-beta04"
 ksp = "1.9.10-1.0.13"
 sqlDelight = "2.0.0"
 
