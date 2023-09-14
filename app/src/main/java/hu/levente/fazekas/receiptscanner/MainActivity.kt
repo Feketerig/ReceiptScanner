@@ -14,7 +14,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
-import hu.levente.fazekas.receiptscanner.database.data.DateAdapter
+import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Clock
 

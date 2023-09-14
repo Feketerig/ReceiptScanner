@@ -1,6 +1,5 @@
 package hu.levente.fazekas.database
 
-import android.graphics.Color
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import hu.levente.fazekas.Item
@@ -9,7 +8,7 @@ import hu.levente.fazekas.ItemId
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.SelectAll
 import hu.levente.fazekas.SelectAllById
-import hu.levente.fazekas.receiptscanner.database.data.DateAdapter
+import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import kotlinx.datetime.Instant
 import org.junit.Assert.*
 import org.junit.Before

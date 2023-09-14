@@ -1,4 +1,4 @@
-package hu.levente.fazekas.receiptscanner.database.data
+package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.ColumnAdapter
 import kotlinx.datetime.Instant
