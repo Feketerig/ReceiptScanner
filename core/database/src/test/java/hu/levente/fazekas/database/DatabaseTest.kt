@@ -3,8 +3,11 @@ package hu.levente.fazekas.database
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import hu.levente.fazekas.Item
+import hu.levente.fazekas.ItemId
+import hu.levente.fazekas.LastPrice
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.fake.sampleCategory
+import hu.levente.fazekas.database.fake.sampleItem
 import hu.levente.fazekas.database.fake.sampleTag
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
@@ -113,5 +116,26 @@ class DatabaseTest {
         assertEquals("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ItemCategory.name)", exception.message)
     }
 
+    @Test
+    fun  itemRepositoryTest(){
+        val itemRepository = SqlDelightItemRepository(db)
+        val categoryRepository = SqlDelightItemCategoryRepository(db)
 
+        //insert
+        itemRepository.insertItem(sampleItem)
+
+        val items = itemRepository.selectAllItem()
+        val categories = categoryRepository.selectAllCategory()
+        val itemId = db.itemIdQueries.selectAll().executeAsList()
+        val lastPrice = db.lastPriceQueries.selectItemLastPrice(sampleItem.itemId).executeAsList()
+
+        assertEquals(1, items.size)
+        assertEquals(sampleItem, items[0])
+        assertEquals(1, categories.size)
+        assertEquals(sampleCategory, categories[0])
+        assertEquals(1, itemId.size)
+        assertEquals(ItemId(sampleItem.itemId, sampleItem.name), itemId[0])
+        assertEquals(1, lastPrice.size)
+        assertEquals(LastPrice(sampleItem.itemId, sampleItem.price, sampleItem.unit), lastPrice[0])
+    }
 }
