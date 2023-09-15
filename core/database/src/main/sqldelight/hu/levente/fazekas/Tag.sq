@@ -4,13 +4,16 @@ CREATE TABLE Tag(
 );
 
 insert:
-INSERT INTO Tag(name)
+INSERT OR ABORT INTO Tag(name)
 VALUES (:name);
 
 selectAll:
 SELECT * FROM Tag;
 
---TODO FIX DELETE
 deleteById:
 DELETE FROM Tag
 WHERE id = :id;
+
+update:
+INSERT OR REPLACE INTO Tag(id, name)
+VALUES (:id, :name);
