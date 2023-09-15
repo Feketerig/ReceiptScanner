@@ -5,7 +5,7 @@ CREATE TABLE ItemCategory(
 );
 
 insert:
-INSERT INTO ItemCategory(name, color)
+INSERT OR ABORT INTO ItemCategory(name, color)
 VALUES( :name, :color);
 
 selectAll:
@@ -14,3 +14,7 @@ SELECT * FROM ItemCategory;
 deleteById:
 DELETE FROM ItemCategory
 WHERE id = :id;
+
+update:
+INSERT OR REPLACE INTO ItemCategory(id, name, color)
+VALUES(:id, :name, :color);
