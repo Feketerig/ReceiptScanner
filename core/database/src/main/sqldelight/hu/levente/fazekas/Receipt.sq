@@ -15,9 +15,13 @@ insert:
 INSERT OR REPLACE INTO Receipt(id, name, date, currency, sumOfPrice, description, imageUri)
 VALUES(?,?,?, ?,  ?,?,?);
 
-selectAll:
-SELECT Receipt.id, Receipt.name, date, currency, description, imageUri
+selectAllReduced:
+SELECT Receipt.id, Receipt.name, date, currency, sumOfPrice
 FROM Receipt;
+
+selectById:
+SELECT * FROM Receipt
+WHERE Receipt.id = :id;
 
 deleteById:
 DELETE FROM Receipt WHERE id = :id;
