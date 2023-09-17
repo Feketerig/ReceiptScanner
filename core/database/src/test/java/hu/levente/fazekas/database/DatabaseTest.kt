@@ -9,7 +9,6 @@ import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.fake.defaultCategory
 import hu.levente.fazekas.database.fake.sampleCategory
 import hu.levente.fazekas.database.fake.sampleItem
-import hu.levente.fazekas.database.fake.sampleReceipt
 import hu.levente.fazekas.database.fake.sampleTag
 import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
@@ -21,7 +20,6 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightTagRepository
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import kotlinx.datetime.Instant
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
@@ -165,7 +163,7 @@ class DatabaseTest {
             id = 1,
             itemId = 2,
             name = "Sajt",
-            count = 2,
+            quantity = 2,
             price = 793.0,
             unit = "kg",
             category = newCategory,
@@ -199,7 +197,7 @@ class DatabaseTest {
             id = 1,
             itemId = 2,
             name = "Alma",
-            count = 2,
+            quantity = 2,
             price = 793.0,
             unit = "kg",
             category = newColorCategory,

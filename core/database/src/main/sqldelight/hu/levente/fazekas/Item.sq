@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant;
 CREATE TABLE Item(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     itemId INTEGER NOT NULL,
-    count INTEGER NOT NULL, --quantity
+    quantity INTEGER NOT NULL,
     price Real NOT NULL, --price per measurement unit
     unit Text NOT NULL, --measurement unit
     category INTEGER NOT NULL DEFAULT 1,
@@ -19,7 +19,7 @@ CREATE TABLE Item(
 insert{
 INSERT OR IGNORE INTO ItemId(name) VALUES (:itemName);
 
-INSERT INTO Item(itemId, count, price, unit, category, date, currency, receiptId)
+INSERT INTO Item(itemId, quantity, price, unit, category, date, currency, receiptId)
 VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
 :count,
 :price,
@@ -32,7 +32,7 @@ VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
 }
 
 selectById:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
 FROM Item
 JOIN ItemCategory ON Item.category = ItemCategory.id
 JOIN ItemId ON Item.itemId = ItemId.itemId
@@ -40,14 +40,14 @@ WHERE Item.id = :id;
 --SORT
 
 selectAll:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
 FROM Item
 JOIN ItemCategory ON Item.category = ItemCategory.id
 JOIN ItemId ON Item.itemId = ItemId.itemId;
 --SORT
 
 selectAllByItemId:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category, date, currency
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.name AS category, date, currency
 FROM Item
 JOIN ItemCategory, ItemId ON
 Item.category = ItemCategory.id AND
@@ -55,7 +55,7 @@ Item.itemId = ItemId.itemId
 WHERE Item.itemId = :itemId;
 
 selectAllByCategory:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.name AS category
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.name AS category
 FROM Item
 JOIN ItemCategory, ItemId ON
 Item.category = ItemCategory.id AND
@@ -63,7 +63,7 @@ Item.itemId = ItemId.itemId
 WHERE Item.category = :categoyId;
 
 selectByReceiptId:
-SELECT Item.id, Item.itemId, ItemId.name, count, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency
 FROM Item
 JOIN ItemCategory, ItemId ON
 Item.category = ItemCategory.id AND
@@ -75,7 +75,7 @@ DELETE FROM Item
 WHERE id = :id;
 
 update{
-INSERT OR REPLACE INTO Item(id, itemId, count, price, unit, category, date, currency, receiptId)
+INSERT OR REPLACE INTO Item(id, itemId, quantity, price, unit, category, date, currency, receiptId)
 VALUES (:id,
 (SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
 :count,

@@ -11,7 +11,7 @@ class SqlDelightItemRepository(
                 id = id,
                 itemId = itemId,
                 name = name,
-                count = count,
+                quantity = count,
                 price = price,
                 unit = unit,
                 category = ItemCategoryEntity(
@@ -30,7 +30,7 @@ class SqlDelightItemRepository(
         db.itemQueries.insert(
             itemName = itemEntity.name,
             categoryId = itemEntity.category.id,
-            count = itemEntity.count,
+            count = itemEntity.quantity,
             price = itemEntity.price,
             unit = itemEntity.unit,
             date = itemEntity.date,
@@ -64,7 +64,7 @@ class SqlDelightItemRepository(
                 itemName = newItemEntity.name,
                 categoryName = newItemEntity.category.name,
                 id = newItemEntity.id,
-                count = newItemEntity.count,
+                count = newItemEntity.quantity,
                 price = newItemEntity.price,
                 unit = newItemEntity.unit,
                 date = newItemEntity.date,

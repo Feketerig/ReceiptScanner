@@ -6,7 +6,7 @@ data class ItemEntity(
     val id: Long,
     val itemId : Long,
     val name: String,
-    val count: Long, //quantity
+    val quantity: Long,
     val price: Double, //price per measurement unit
     val unit: String, //measurement unit
     val category: ItemCategoryEntity,
