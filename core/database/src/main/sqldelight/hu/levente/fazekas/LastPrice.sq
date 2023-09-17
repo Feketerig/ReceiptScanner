@@ -1,7 +1,8 @@
 CREATE TABLE LastPrice (
     itemId INTEGER NOT NULL PRIMARY KEY,
-    lastPrice INTEGER NOT NULL,
-    unit Text NOT NULL
+    lastPrice REAL NOT NULL,
+    unit Text NOT NULL,
+    FOREIGN KEY(itemId) REFERENCES ItemId(itemId) ON DELETE CASCADE
 );
 
 CREATE TRIGGER IF NOT EXISTS lastPrice

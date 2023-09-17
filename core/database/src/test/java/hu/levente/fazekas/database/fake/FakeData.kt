@@ -1,6 +1,5 @@
 package hu.levente.fazekas.database.fake
 
-import hu.levente.fazekas.ItemCategory
 import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
 import hu.levente.fazekas.receiptscanner.database.ItemEntity
@@ -8,8 +7,14 @@ import hu.levente.fazekas.receiptscanner.database.ReceiptEntity
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import kotlinx.datetime.Instant
 
-val sampleCategory = ItemCategoryEntity(
+val defaultCategory = ItemCategoryEntity(
     id = 1,
+    name = "Not Specified",
+    color = 111
+)
+
+val sampleCategory = ItemCategoryEntity(
+    id = 2,
     name = "Tejtermék",
     color = 789
 )
@@ -23,7 +28,8 @@ val sampleItem = ItemEntity(
     unit = "L",
     category = sampleCategory,
     date = Instant.fromEpochSeconds(1),
-    currency = Currency.HUF
+    currency = Currency.HUF,
+    receiptId = 1
 )
 
 val sampleItems = listOf(
@@ -36,7 +42,8 @@ val sampleItems = listOf(
         unit = "L",
         category = sampleCategory,
         date = Instant.fromEpochSeconds(1),
-        currency = Currency.HUF
+        currency = Currency.HUF,
+        receiptId = 1
     ),
     ItemEntity(
         id = 2,
@@ -47,7 +54,8 @@ val sampleItems = listOf(
         unit = "L",
         category = sampleCategory,
         date = Instant.fromEpochSeconds(2),
-        currency = Currency.HUF
+        currency = Currency.HUF,
+        receiptId = 1
     ),
     ItemEntity(
         id = 3,
@@ -58,7 +66,8 @@ val sampleItems = listOf(
         unit = "kg",
         category = sampleCategory,
         date = Instant.fromEpochSeconds(1),
-        currency = Currency.HUF
+        currency = Currency.HUF,
+        receiptId = 1
     )
 )
 

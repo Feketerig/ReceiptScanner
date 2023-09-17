@@ -3,5 +3,17 @@ CREATE TABLE ItemId (
     name TEXT NOT NULL UNIQUE
 );
 
+insert:
+INSERT INTO ItemId(name)
+VALUES (:name);
+
+update:
+INSERT OR REPLACE INTO ItemId(itemId, name)
+VALUES (:itemId, :name);
+
 selectAll:
 SELECT * FROM ItemId;
+
+deleteById:
+DELETE FROM ItemId
+WHERE itemId = :itemId;

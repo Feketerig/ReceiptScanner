@@ -1,6 +1,5 @@
 package hu.levente.fazekas.receiptscanner.database
 
-import hu.levente.fazekas.ItemCategory
 import kotlinx.datetime.Instant
 
 data class ItemEntity(
@@ -10,7 +9,8 @@ data class ItemEntity(
     val count: Long, //quantity
     val price: Double, //price per measurement unit
     val unit: String, //measurement unit
-    val category: ItemCategory,
+    val category: ItemCategoryEntity,
     val date: Instant,
-    val currency: Currency
+    val currency: Currency,
+    val receiptId: Long
 )
