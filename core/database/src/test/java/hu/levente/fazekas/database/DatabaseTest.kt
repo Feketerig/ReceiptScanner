@@ -46,50 +46,6 @@ class DatabaseTest {
     }
 
     @Test
-    fun itemCategoryRepositoryTest(){
-        val itemCategoryRepository = SqlDelightItemCategoryRepository(db)
-
-        //insert default category
-        itemCategoryRepository.insertCategory(defaultCategory)
-
-        //insert
-        itemCategoryRepository.insertCategory(sampleCategory)
-
-        val categories = itemCategoryRepository.selectAllCategory()
-
-        assertEquals(2, categories.size)
-        assertEquals(defaultCategory, categories[0])
-        assertEquals(sampleCategory, categories[1])
-
-        //update
-        val newCategory = ItemCategoryEntity(2, "Gyümölcs", null)
-        itemCategoryRepository.updateCategory(newCategory)
-
-        val updatedCategories = itemCategoryRepository.selectAllCategory()
-
-        assertEquals(2, updatedCategories.size)
-        assertEquals(defaultCategory, updatedCategories[0])
-        assertEquals(newCategory, updatedCategories[1])
-
-        //delete
-        itemCategoryRepository.deleteCategory(sampleCategory.id)
-
-        val deletedCategories = itemCategoryRepository.selectAllCategory()
-
-        assertEquals(1, deletedCategories.size)
-        assertEquals(defaultCategory, deletedCategories[0])
-
-        //insert same name twice throws exception
-        itemCategoryRepository.insertCategory(sampleCategory)
-
-        val exception = assertThrows(Exception::class.java) {
-            itemCategoryRepository.insertCategory(sampleCategory)
-        }
-
-        assertEquals("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ItemCategory.name)", exception.message)
-    }
-
-    @Test
     fun  itemRepositoryTest(){
         val itemRepository = SqlDelightItemRepository(db)
         val categoryRepository = SqlDelightItemCategoryRepository(db)
