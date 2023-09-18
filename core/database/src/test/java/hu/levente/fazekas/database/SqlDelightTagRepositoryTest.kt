@@ -58,6 +58,23 @@ class SqlDelightTagRepositoryTest {
     }
 
     @Test
+    fun `Select all tags returns all the tags in good format`(){
+        tagRepository.insertTag(sampleTag.name)
+
+        val tags = db.tagQueries.selectAll(
+            mapper = { id, name ->
+                TagEntity(
+                    id = id,
+                    name = name,
+                )
+            }
+        ).executeAsList()
+
+        assertEquals(1, tags.size)
+        assertEquals(sampleTag, tags[0])
+    }
+
+    @Test
     fun `Update tag name successfully`(){
         tagRepository.insertTag(sampleTag.name)
         val newTag = TagEntity(1, "Aldi")
