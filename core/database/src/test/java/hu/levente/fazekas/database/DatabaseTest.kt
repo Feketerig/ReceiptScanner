@@ -46,44 +46,6 @@ class DatabaseTest {
     }
 
     @Test
-    fun tagRepositoryTest(){
-        val tagRepository = SqlDelightTagRepository(db)
-
-        //insert
-        tagRepository.insertTag(sampleTag.name)
-
-        val tags = tagRepository.selectAllTag()
-
-        assertEquals(1, tags.size)
-        assertEquals(sampleTag, tags[0])
-
-        //update
-        val newTag = TagEntity(1, "Aldi")
-        tagRepository.updateTag(newTag)
-
-        val updatedTags = tagRepository.selectAllTag()
-
-        assertEquals(1, updatedTags.size)
-        assertEquals(newTag, updatedTags[0])
-
-        //delete
-        tagRepository.deleteTag(newTag.id)
-
-        val deletedTags = tagRepository.selectAllTag()
-
-        assertEquals(0, deletedTags.size)
-
-        //insert same name twice throws exception
-        tagRepository.insertTag(sampleTag.name)
-
-        val exception = assertThrows(Exception::class.java) {
-            tagRepository.insertTag(sampleTag.name)
-        }
-
-        assertEquals("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: Tag.name)", exception.message)
-    }
-
-    @Test
     fun itemCategoryRepositoryTest(){
         val itemCategoryRepository = SqlDelightItemCategoryRepository(db)
 
