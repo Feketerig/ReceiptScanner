@@ -16,5 +16,8 @@ DELETE FROM ItemCategory
 WHERE id = :id;
 
 update:
-INSERT OR REPLACE INTO ItemCategory(id, name, color)
-VALUES(:id, :name, :color);
+UPDATE ItemCategory
+SET
+name = :name,
+color = :color
+WHERE id = :id;

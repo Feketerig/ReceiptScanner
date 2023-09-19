@@ -20,7 +20,7 @@ class SqlDelightReceiptRepository(
                 db.itemQueries.insert(
                     itemName = item.name,
                     categoryId = item.category.id,
-                    count = item.quantity,
+                    quantity = item.quantity,
                     price = item.price,
                     unit = item.unit,
                     date = item.date,

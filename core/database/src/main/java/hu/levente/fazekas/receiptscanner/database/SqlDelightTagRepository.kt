@@ -18,6 +18,6 @@ class SqlDelightTagRepository(
     }
 
     fun updateTag(tag: TagEntity){
-        db.tagQueries.update(tag.id, tag.name)
+        db.tagQueries.update(id = tag.id,name = tag.name)
     }
 }

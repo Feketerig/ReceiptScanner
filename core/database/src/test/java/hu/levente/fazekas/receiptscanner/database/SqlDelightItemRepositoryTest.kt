@@ -10,12 +10,7 @@ import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.defaultCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleItem
-import hu.levente.fazekas.receiptscanner.database.Currency
-import hu.levente.fazekas.receiptscanner.database.DateAdapter
-import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
-import hu.levente.fazekas.receiptscanner.database.ItemEntity
-import hu.levente.fazekas.receiptscanner.database.SqlDelightItemCategoryRepository
-import hu.levente.fazekas.receiptscanner.database.SqlDelightItemRepository
+import hu.levente.fazekas.receiptscanner.database.fake.sampleItems
 import kotlinx.datetime.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -49,18 +44,17 @@ class SqlDelightItemRepositoryTest {
         categoryRepository = SqlDelightItemCategoryRepository(db)
         //Inserting a default category to have a fallback category when deleting
         categoryRepository.insertCategory(defaultCategory)
+        categoryRepository.insertCategory(sampleCategory)
     }
 
     @Test
     fun `Insert item with category successfully`(){
-        categoryRepository.insertCategory(sampleCategory)
-
         itemRepository.insertItem(sampleItem)
 
         val items = itemRepository.selectAllItem()
         val categories = categoryRepository.selectAllCategory()
         val itemId = db.itemIdQueries.selectAll().executeAsList()
-        val lastPrice = db.lastPriceQueries.selectItemLastPrice(sampleItem.itemId).executeAsList()
+        val lastPrice = db.lastPriceQueries.selectLastPriceByItemId(sampleItem.itemId).executeAsList()
         assertEquals(1, items.size)
         assertEquals(sampleItem, items[0])
         assertEquals(2, categories.size)
@@ -75,33 +69,7 @@ class SqlDelightItemRepositoryTest {
     }
 
     @Test
-    fun `Insert item with default category successfully`(){
-        val itemWithDefaultCategory = sampleItem.copy(
-            category = defaultCategory
-        )
-
-        itemRepository.insertItem(itemWithDefaultCategory)
-
-        val items = itemRepository.selectAllItem()
-        val categories = categoryRepository.selectAllCategory()
-        val itemId = db.itemIdQueries.selectAll().executeAsList()
-        val lastPrice = db.lastPriceQueries.selectItemLastPrice(sampleItem.itemId).executeAsList()
-        assertEquals(1, items.size)
-        assertEquals(itemWithDefaultCategory, items[0])
-        assertEquals(1, categories.size)
-        assertEquals(defaultCategory, categories[0])
-        assertEquals(1, itemId.size)
-        assertEquals(ItemId(sampleItem.itemId, sampleItem.name), itemId[0])
-        assertEquals(1, lastPrice.size)
-        assertEquals(
-            LastPrice(sampleItem.itemId, sampleItem.price, sampleItem.unit),
-            lastPrice[0]
-        )
-    }
-
-    @Test
     fun `Select an item returns with good formatting`(){
-        categoryRepository.insertCategory(sampleCategory)
         itemRepository.insertItem(sampleItem)
 
         val item = db.itemQueries.selectById(sampleItem.id) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
@@ -132,16 +100,15 @@ class SqlDelightItemRepositoryTest {
             id = 2,
             date = Instant.fromEpochSeconds(2)
         )
-        categoryRepository.insertCategory(sampleCategory)
         itemRepository.insertItem(sampleItem)
         itemRepository.insertItem(secondItem)
 
-        val items = db.itemQueries.selectAll { id, itemId, name, count, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+        val items = db.itemQueries.selectAll { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
             ItemEntity(
                 id = id,
                 itemId = itemId,
                 name = name,
-                quantity = count,
+                quantity = quantity,
                 price = price,
                 unit = unit,
                 category = ItemCategoryEntity(
@@ -162,7 +129,6 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Select items by itemId returns with good formatting and order`(){
-        categoryRepository.insertCategory(sampleCategory)
         val secondItem = sampleItem.copy(
             id = 2,
             name = "Alma",
@@ -202,8 +168,34 @@ class SqlDelightItemRepositoryTest {
     }
 
     @Test
+    fun `Insert multiple items successfully`(){
+        itemRepository.insertItem(sampleItems[0])
+        itemRepository.insertItem(sampleItems[1])
+        itemRepository.insertItem(sampleItems[2])
+
+        val items = itemRepository.selectAllItem()
+        val categories = categoryRepository.selectAllCategory()
+        val itemIds = db.itemIdQueries.selectAll().executeAsList()
+        val lastPriceForFirstItem = db.lastPriceQueries.selectLastPriceByItemId(sampleItems[0].itemId).executeAsList()
+        val lastPriceForThirdItem = db.lastPriceQueries.selectLastPriceByItemId(sampleItems[2].itemId).executeAsList()
+        assertEquals(3, items.size)
+        assertEquals(sampleItems[0], items[0])
+        assertEquals(sampleItems[1], items[1])
+        assertEquals(sampleItems[2], items[2])
+        assertEquals(2, categories.size)
+        assertEquals(defaultCategory, categories[0])
+        assertEquals(sampleCategory, categories[1])
+        assertEquals(2, itemIds.size)
+        assertEquals(ItemId(sampleItems[0].itemId, sampleItems[0].name), itemIds[0])
+        assertEquals(ItemId(sampleItems[2].itemId, sampleItems[2].name), itemIds[1])
+        assertEquals(1, lastPriceForFirstItem.size)
+        assertEquals(1, lastPriceForThirdItem.size)
+        assertEquals(LastPrice(sampleItems[1].itemId, sampleItems[1].price, sampleItems[1].unit), lastPriceForFirstItem[0])
+        assertEquals(LastPrice(sampleItems[2].itemId, sampleItems[2].price, sampleItems[2].unit), lastPriceForThirdItem[0])
+    }
+
+    @Test
     fun `Select items by category returns with good formatting and order`(){
-        categoryRepository.insertCategory(sampleCategory)
         val secondCategory = ItemCategoryEntity(
             id = 3,
             name = "Gyümölcs",
@@ -249,7 +241,6 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Select items by receiptId returns with good formatting and order`(){
-        categoryRepository.insertCategory(sampleCategory)
         val secondItem = sampleItem.copy(
             id = 2,
             date = Instant.fromEpochSeconds(2),
@@ -289,7 +280,6 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Update item name`(){
-        categoryRepository.insertCategory(sampleCategory)
         itemRepository.insertItem(sampleItem)
         val newItem = ItemEntity(
             id = 1,
@@ -309,7 +299,7 @@ class SqlDelightItemRepositoryTest {
         val updatedItems = itemRepository.selectAllItem()
         val updatedCategories = categoryRepository.selectAllCategory()
         val updatedItemId = db.itemIdQueries.selectAll().executeAsList()
-        val updatedLastPrice = db.lastPriceQueries.selectItemLastPrice(newItem.itemId).executeAsList()
+        val updatedLastPrice = db.lastPriceQueries.selectLastPriceByItemId(newItem.itemId).executeAsList()
         assertEquals(1, updatedItems.size)
         assertEquals(newItem, updatedItems[0])
         assertEquals(2, updatedCategories.size)
@@ -322,7 +312,6 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Update item's category`(){
-        categoryRepository.insertCategory(sampleCategory)
         itemRepository.insertItem(sampleItem)
         val newCategory = ItemCategoryEntity(
             id = 2,
@@ -338,7 +327,7 @@ class SqlDelightItemRepositoryTest {
         val updatedItems = itemRepository.selectAllItem()
         val updatedCategories = categoryRepository.selectAllCategory()
         val updatedItemId = db.itemIdQueries.selectAll().executeAsList()
-        val updatedLastPrice = db.lastPriceQueries.selectItemLastPrice(newItem.itemId).executeAsList()
+        val updatedLastPrice = db.lastPriceQueries.selectLastPriceByItemId(newItem.itemId).executeAsList()
         assertEquals(1, updatedItems.size)
         assertEquals(newItem, updatedItems[0])
         assertEquals(2, updatedCategories.size)
@@ -351,7 +340,6 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Delete category, item's category set to default`(){
-        categoryRepository.insertCategory(sampleCategory)
         itemRepository.insertItem(sampleItem)
         val expectedItem = sampleItem.copy(
             category = defaultCategory
@@ -362,7 +350,7 @@ class SqlDelightItemRepositoryTest {
         val updatedItems = itemRepository.selectAllItem()
         val updatedCategories = categoryRepository.selectAllCategory()
         val updatedItemId = db.itemIdQueries.selectAll().executeAsList()
-        val updatedLastPrice = db.lastPriceQueries.selectItemLastPrice(sampleItem.itemId).executeAsList()
+        val updatedLastPrice = db.lastPriceQueries.selectLastPriceByItemId(sampleItem.itemId).executeAsList()
         assertEquals(1, updatedItems.size)
         assertEquals(expectedItem, updatedItems[0])
         assertEquals(1, updatedCategories.size)
@@ -375,7 +363,6 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Delete item, category not deleted, itemId deleted, lastPrice deleted`(){
-        categoryRepository.insertCategory(sampleCategory)
         itemRepository.insertItem(sampleItem)
 
         itemRepository.deleteItem(sampleItem.id)
@@ -383,7 +370,7 @@ class SqlDelightItemRepositoryTest {
         val deletedItems = itemRepository.selectAllItem()
         val deletedCategories = categoryRepository.selectAllCategory()
         val deletedItemId = db.itemIdQueries.selectAll().executeAsList()
-        val deletedPrice = db.lastPriceQueries.selectItemLastPrice(sampleItem.itemId).executeAsList()
+        val deletedPrice = db.lastPriceQueries.selectLastPriceByItemId(sampleItem.itemId).executeAsList()
         assertEquals(0, deletedItems.size)
         assertEquals(2, deletedCategories.size)
         assertEquals(defaultCategory, deletedCategories[0])

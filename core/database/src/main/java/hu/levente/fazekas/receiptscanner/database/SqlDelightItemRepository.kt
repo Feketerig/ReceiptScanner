@@ -114,7 +114,7 @@ class SqlDelightItemRepository(
         db.itemQueries.insert(
             itemName = itemEntity.name,
             categoryId = itemEntity.category.id,
-            count = itemEntity.quantity,
+            quantity = itemEntity.quantity,
             price = itemEntity.price,
             unit = itemEntity.unit,
             date = itemEntity.date,
@@ -129,7 +129,7 @@ class SqlDelightItemRepository(
             if (oldItem.itemId != newItemEntity.itemId) {
                 db.itemIdQueries.insert(newItemEntity.name)
             } else if (oldItem.name != newItemEntity.name) {
-                db.itemIdQueries.update(newItemEntity.itemId, newItemEntity.name)
+                db.itemIdQueries.update(itemId = newItemEntity.itemId,name = newItemEntity.name)
             }
             if (oldItem.categoryId != newItemEntity.category.id) {
                 db.itemCategoryQueries.deleteById(oldItem.categoryId)
@@ -148,7 +148,7 @@ class SqlDelightItemRepository(
                 itemName = newItemEntity.name,
                 categoryName = newItemEntity.category.name,
                 id = newItemEntity.id,
-                count = newItemEntity.quantity,
+                quantity = newItemEntity.quantity,
                 price = newItemEntity.price,
                 unit = newItemEntity.unit,
                 date = newItemEntity.date,

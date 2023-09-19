@@ -1,5 +1,5 @@
 CREATE TABLE Tag(
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    id INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL UNIQUE
 );
 
@@ -15,5 +15,6 @@ DELETE FROM Tag
 WHERE id = :id;
 
 update:
-INSERT OR REPLACE INTO Tag(id, name)
-VALUES (:id, :name);
+UPDATE Tag
+SET name = :name
+WHERE id = :id;

@@ -1,5 +1,5 @@
 CREATE TABLE ItemId (
-    itemId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    itemId INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL UNIQUE
 );
 
@@ -8,8 +8,9 @@ INSERT INTO ItemId(name)
 VALUES (:name);
 
 update:
-INSERT OR REPLACE INTO ItemId(itemId, name)
-VALUES (:itemId, :name);
+UPDATE ItemId
+SET name = :name
+WHERE itemId = :itemId;
 
 selectAll:
 SELECT * FROM ItemId;

@@ -2,7 +2,7 @@ import hu.levente.fazekas.receiptscanner.database.Currency;
 import kotlinx.datetime.Instant;
 
 CREATE TABLE Item(
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    id INTEGER NOT NULL PRIMARY KEY,
     itemId INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
     price Real NOT NULL, --price per measurement unit
@@ -21,7 +21,7 @@ INSERT OR IGNORE INTO ItemId(name) VALUES (:itemName);
 
 INSERT INTO Item(itemId, quantity, price, unit, category, date, currency, receiptId)
 VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
-:count,
+:quantity,
 :price,
 :unit,
 :categoryId,
@@ -75,14 +75,14 @@ DELETE FROM Item
 WHERE id = :id;
 
 update:
-INSERT OR REPLACE INTO Item(id, itemId, quantity, price, unit, category, date, currency, receiptId)
-VALUES (:id,
-(SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
-:count,
-:price,
-:unit,
-(SELECT ItemCategory.id FROM ItemCategory WHERE ItemCategory.name = :categoryName),
-:date,
-:currency,
-:receiptId
-);
+UPDATE Item
+SET
+itemId = (SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
+quantity = :quantity,
+price = :price,
+unit = :unit,
+category = (SELECT ItemCategory.id FROM ItemCategory WHERE ItemCategory.name = :categoryName),
+date = :date,
+currency = :currency,
+receiptId = :receiptId
+WHERE id = :id;
