@@ -6,18 +6,102 @@ class SqlDelightItemRepository(
     val db: ReceiptDatabase
 ) {
     fun selectAllItem(): List<ItemEntity>{
-        return db.itemQueries.selectAll { id, itemId, name, count, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+        return db.itemQueries.selectAll { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
             ItemEntity(
                 id = id,
                 itemId = itemId,
                 name = name,
-                quantity = count,
+                quantity = quantity,
                 price = price,
                 unit = unit,
                 category = ItemCategoryEntity(
                         id = categoryId,
                         name = categoryName,
                         color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+    }
+
+    fun selectItemById(id: Long): ItemEntity{
+        return db.itemQueries.selectById(id) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsOne()
+    }
+
+    fun selectAllByItemId(id: Long): List<ItemEntity>{
+        return db.itemQueries.selectAllByItemId(id) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+    }
+
+    fun selectAllByCategory(categoryId: Long): List<ItemEntity>{
+        return db.itemQueries.selectAllByCategory(categoryId) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+    }
+
+    fun selectAllByReceiptId(receiptId: Long): List<ItemEntity>{
+        return db.itemQueries.selectByReceiptId(receiptId) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
                 ),
                 date = date,
                 currency = currency,

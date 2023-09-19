@@ -37,44 +37,44 @@ FROM Item
 JOIN ItemCategory ON Item.category = ItemCategory.id
 JOIN ItemId ON Item.itemId = ItemId.itemId
 WHERE Item.id = :id;
---SORT
 
 selectAll:
 SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
 FROM Item
 JOIN ItemCategory ON Item.category = ItemCategory.id
-JOIN ItemId ON Item.itemId = ItemId.itemId;
---SORT
+JOIN ItemId ON Item.itemId = ItemId.itemId
+ORDER BY Item.date DESC;
 
 selectAllByItemId:
-SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.name AS category, date, currency
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
 FROM Item
-JOIN ItemCategory, ItemId ON
-Item.category = ItemCategory.id AND
-Item.itemId = ItemId.itemId
-WHERE Item.itemId = :itemId;
+JOIN ItemCategory ON Item.category = ItemCategory.id
+JOIN ItemId ON Item.itemId = ItemId.itemId
+WHERE Item.itemId = :itemId
+ORDER BY Item.date DESC;
 
 selectAllByCategory:
-SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.name AS category
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
 FROM Item
 JOIN ItemCategory, ItemId ON
 Item.category = ItemCategory.id AND
 Item.itemId = ItemId.itemId
-WHERE Item.category = :categoyId;
+WHERE Item.category = :categoyId
+ORDER BY Item.date DESC;
 
 selectByReceiptId:
-SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
 FROM Item
-JOIN ItemCategory, ItemId ON
-Item.category = ItemCategory.id AND
-Item.itemId = ItemId.itemId
-WHERE receiptId = :id;
+JOIN ItemCategory ON Item.category = ItemCategory.id
+JOIN ItemId ON Item.itemId = ItemId.itemId
+WHERE receiptId = :id
+ORDER BY Item.date DESC;
 
 deleteById:
 DELETE FROM Item
 WHERE id = :id;
 
-update{
+update:
 INSERT OR REPLACE INTO Item(id, itemId, quantity, price, unit, category, date, currency, receiptId)
 VALUES (:id,
 (SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
@@ -86,4 +86,3 @@ VALUES (:id,
 :currency,
 :receiptId
 );
-}
