@@ -41,7 +41,7 @@ val sampleItems = listOf(
         price = 398.0,
         unit = "L",
         category = sampleCategory,
-        date = Instant.fromEpochSeconds(1),
+        date = Instant.fromEpochSeconds(3),
         currency = Currency.HUF,
         receiptId = 1
     ),
@@ -52,7 +52,7 @@ val sampleItems = listOf(
         quantity = 5,
         price = 468.0,
         unit = "L",
-        category = sampleCategory,
+        category = defaultCategory,
         date = Instant.fromEpochSeconds(2),
         currency = Currency.HUF,
         receiptId = 1

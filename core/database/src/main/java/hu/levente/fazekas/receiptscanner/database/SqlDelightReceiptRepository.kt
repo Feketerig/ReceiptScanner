@@ -42,7 +42,7 @@ class SqlDelightReceiptRepository(
     fun selectReceiptById(receiptId: Long): ReceiptEntity{
         return db.transactionWithResult {
             val receipt = db.receiptQueries.selectById(receiptId).executeAsOne()
-            val items = db.itemQueries.selectByReceiptId(receiptId, mapper = { id, itemId, name, count, price, unit, categoryId,categoryName,categoryColor, date, currency ->
+            val items = db.itemQueries.selectByReceiptId(receiptId, mapper = { id, itemId, name, count, price, unit, categoryId,categoryName,categoryColor, date, currency, receiptId ->
                 ItemEntity(id, itemId,name,count,price,unit, ItemCategoryEntity(categoryId, categoryName,categoryColor),date,currency, receiptId)
             }).executeAsList()
 
