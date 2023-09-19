@@ -8,7 +8,6 @@ import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.defaultCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleReceipt
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -51,7 +50,8 @@ class SqlDelightReceiptRepositoryTest {
         receiptRepository.insertReceipt(sampleReceipt)
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
-        val itemIds = db.itemIdQueries.selectAll().executeAsList()
+        val items = itemRepository.selectAll()
         assertEquals(sampleReceipt, receipt)
+        assertEquals(3, items.size)
     }
 }

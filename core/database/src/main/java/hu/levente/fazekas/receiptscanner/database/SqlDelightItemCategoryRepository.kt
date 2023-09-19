@@ -23,7 +23,7 @@ class SqlDelightItemCategoryRepository(
     }
 
     fun updateCategory(category: ItemCategoryEntity){
-        db.itemCategoryQueries.update(category.id, category.name, category.color)
+        db.itemCategoryQueries.update(id = category.id, name = category.name, color = category.color)
     }
 
     fun deleteCategory(categoryId: Long){

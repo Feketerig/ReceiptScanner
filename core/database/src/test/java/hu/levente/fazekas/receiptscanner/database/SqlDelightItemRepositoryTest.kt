@@ -51,7 +51,7 @@ class SqlDelightItemRepositoryTest {
     fun `Insert item with category successfully`(){
         itemRepository.insertItem(sampleItem)
 
-        val items = itemRepository.selectAllItem()
+        val items = itemRepository.selectAll()
         val categories = categoryRepository.selectAllCategory()
         val itemId = db.itemIdQueries.selectAll().executeAsList()
         val lastPrice = db.lastPriceQueries.selectLastPriceByItemId(sampleItem.itemId).executeAsList()
@@ -173,7 +173,7 @@ class SqlDelightItemRepositoryTest {
         itemRepository.insertItem(sampleItems[1])
         itemRepository.insertItem(sampleItems[2])
 
-        val items = itemRepository.selectAllItem()
+        val items = itemRepository.selectAll()
         val categories = categoryRepository.selectAllCategory()
         val itemIds = db.itemIdQueries.selectAll().executeAsList()
         val lastPriceForFirstItem = db.lastPriceQueries.selectLastPriceByItemId(sampleItems[0].itemId).executeAsList()
@@ -296,7 +296,7 @@ class SqlDelightItemRepositoryTest {
 
         itemRepository.updateItem(newItem)
 
-        val updatedItems = itemRepository.selectAllItem()
+        val updatedItems = itemRepository.selectAll()
         val updatedCategories = categoryRepository.selectAllCategory()
         val updatedItemId = db.itemIdQueries.selectAll().executeAsList()
         val updatedLastPrice = db.lastPriceQueries.selectLastPriceByItemId(newItem.itemId).executeAsList()
@@ -324,7 +324,7 @@ class SqlDelightItemRepositoryTest {
 
         itemRepository.updateItem(newItem)
 
-        val updatedItems = itemRepository.selectAllItem()
+        val updatedItems = itemRepository.selectAll()
         val updatedCategories = categoryRepository.selectAllCategory()
         val updatedItemId = db.itemIdQueries.selectAll().executeAsList()
         val updatedLastPrice = db.lastPriceQueries.selectLastPriceByItemId(newItem.itemId).executeAsList()
@@ -347,7 +347,7 @@ class SqlDelightItemRepositoryTest {
 
         categoryRepository.deleteCategory(sampleItem.category.id)
 
-        val updatedItems = itemRepository.selectAllItem()
+        val updatedItems = itemRepository.selectAll()
         val updatedCategories = categoryRepository.selectAllCategory()
         val updatedItemId = db.itemIdQueries.selectAll().executeAsList()
         val updatedLastPrice = db.lastPriceQueries.selectLastPriceByItemId(sampleItem.itemId).executeAsList()
@@ -367,7 +367,7 @@ class SqlDelightItemRepositoryTest {
 
         itemRepository.deleteItem(sampleItem.id)
 
-        val deletedItems = itemRepository.selectAllItem()
+        val deletedItems = itemRepository.selectAll()
         val deletedCategories = categoryRepository.selectAllCategory()
         val deletedItemId = db.itemIdQueries.selectAll().executeAsList()
         val deletedPrice = db.lastPriceQueries.selectLastPriceByItemId(sampleItem.itemId).executeAsList()

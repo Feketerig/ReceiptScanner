@@ -5,7 +5,7 @@ import hu.levente.fazekas.database.ReceiptDatabase
 class SqlDelightItemRepository(
     val db: ReceiptDatabase
 ) {
-    fun selectAllItem(): List<ItemEntity>{
+    fun selectAll(): List<ItemEntity>{
         return db.itemQueries.selectAll { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
             ItemEntity(
                 id = id,
@@ -139,9 +139,9 @@ class SqlDelightItemRepository(
                 )
             } else if (oldItem.categoryName != newItemEntity.category.name || oldItem.categoryColor != newItemEntity.category.color) {
                 db.itemCategoryQueries.update(
-                    newItemEntity.category.id,
-                    newItemEntity.category.name,
-                    newItemEntity.category.color
+                    id = newItemEntity.category.id,
+                    name = newItemEntity.category.name,
+                    color = newItemEntity.category.color
                 )
             }
             db.itemQueries.update(
