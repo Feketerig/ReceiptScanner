@@ -1,4 +1,4 @@
-package hu.levente.fazekas.database.fake
+package hu.levente.fazekas.receiptscanner.database.fake
 
 import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity

@@ -1,4 +1,4 @@
-package hu.levente.fazekas.database
+package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
@@ -6,9 +6,10 @@ import hu.levente.fazekas.Item
 import hu.levente.fazekas.ItemId
 import hu.levente.fazekas.LastPrice
 import hu.levente.fazekas.Receipt
-import hu.levente.fazekas.database.fake.defaultCategory
-import hu.levente.fazekas.database.fake.sampleCategory
-import hu.levente.fazekas.database.fake.sampleItem
+import hu.levente.fazekas.database.ReceiptDatabase
+import hu.levente.fazekas.receiptscanner.database.fake.defaultCategory
+import hu.levente.fazekas.receiptscanner.database.fake.sampleCategory
+import hu.levente.fazekas.receiptscanner.database.fake.sampleItem
 import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
@@ -99,8 +100,191 @@ class SqlDelightItemRepositoryTest {
     }
 
     @Test
+    fun `Select an item returns with good formatting`(){
+        categoryRepository.insertCategory(sampleCategory)
+        itemRepository.insertItem(sampleItem)
+
+        val item = db.itemQueries.selectById(sampleItem.id) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsOne()
+
+        assertEquals(sampleItem, item)
+    }
+
+    @Test
     fun `Select all items returns with good formatting and order`(){
-        
+        val secondItem = sampleItem.copy(
+            id = 2,
+            date = Instant.fromEpochSeconds(2)
+        )
+        categoryRepository.insertCategory(sampleCategory)
+        itemRepository.insertItem(sampleItem)
+        itemRepository.insertItem(secondItem)
+
+        val items = db.itemQueries.selectAll { id, itemId, name, count, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = count,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+
+        assertEquals(2, items.size)
+        assertEquals(secondItem, items[0])
+        assertEquals(sampleItem, items[1])
+    }
+
+    @Test
+    fun `Select items by itemId returns with good formatting and order`(){
+        categoryRepository.insertCategory(sampleCategory)
+        val secondItem = sampleItem.copy(
+            id = 2,
+            name = "Alma",
+            itemId = 2,
+            date = Instant.fromEpochSeconds(2)
+        )
+        val thirdItem = sampleItem.copy(
+            id = 3,
+            date = Instant.fromEpochSeconds(3)
+        )
+        itemRepository.insertItem(sampleItem)
+        itemRepository.insertItem(secondItem)
+        itemRepository.insertItem(thirdItem)
+
+        val items = db.itemQueries.selectAllByItemId(sampleItem.itemId) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+
+        assertEquals(2, items.size)
+        assertEquals(thirdItem, items[0])
+        assertEquals(sampleItem, items[1])
+    }
+
+    @Test
+    fun `Select items by category returns with good formatting and order`(){
+        categoryRepository.insertCategory(sampleCategory)
+        val secondCategory = ItemCategoryEntity(
+            id = 3,
+            name = "Gyümölcs",
+            color = null
+        )
+        categoryRepository.insertCategory(secondCategory)
+        val secondItem = sampleItem.copy(
+            id = 2,
+            category = secondCategory,
+            date = Instant.fromEpochSeconds(2)
+        )
+        val thirdItem = sampleItem.copy(
+            id = 3,
+            date = Instant.fromEpochSeconds(3)
+        )
+        itemRepository.insertItem(sampleItem)
+        itemRepository.insertItem(secondItem)
+        itemRepository.insertItem(thirdItem)
+
+        val items = db.itemQueries.selectAllByCategory(sampleItem.category.id) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+
+        assertEquals(2, items.size)
+        assertEquals(thirdItem, items[0])
+        assertEquals(sampleItem, items[1])
+    }
+
+    @Test
+    fun `Select items by receiptId returns with good formatting and order`(){
+        categoryRepository.insertCategory(sampleCategory)
+        val secondItem = sampleItem.copy(
+            id = 2,
+            date = Instant.fromEpochSeconds(2),
+            receiptId = 2
+        )
+        val thirdItem = sampleItem.copy(
+            id = 3,
+            date = Instant.fromEpochSeconds(3)
+        )
+        itemRepository.insertItem(sampleItem)
+        itemRepository.insertItem(secondItem)
+        itemRepository.insertItem(thirdItem)
+
+        val items = db.itemQueries.selectByReceiptId(sampleItem.receiptId) { id, itemId, name, quantity, price, unit, categoryId, categoryName, categoryColor, date, currency, receiptId ->
+            ItemEntity(
+                id = id,
+                itemId = itemId,
+                name = name,
+                quantity = quantity,
+                price = price,
+                unit = unit,
+                category = ItemCategoryEntity(
+                    id = categoryId,
+                    name = categoryName,
+                    color = categoryColor
+                ),
+                date = date,
+                currency = currency,
+                receiptId = receiptId
+            )
+        }.executeAsList()
+
+        assertEquals(2, items.size)
+        assertEquals(thirdItem, items[0])
+        assertEquals(sampleItem, items[1])
     }
 
     @Test

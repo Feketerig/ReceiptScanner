@@ -1,10 +1,11 @@
-package hu.levente.fazekas.database
+package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
-import hu.levente.fazekas.database.fake.sampleTag
+import hu.levente.fazekas.database.ReceiptDatabase
+import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import hu.levente.fazekas.receiptscanner.database.SqlDelightTagRepository
 import hu.levente.fazekas.receiptscanner.database.TagEntity
