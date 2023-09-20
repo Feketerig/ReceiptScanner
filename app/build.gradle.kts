@@ -52,7 +52,8 @@ android {
 
 dependencies {
 
-    implementation(project(":core:database"))
+    implementation(project(":core:database")) //TODO Remove this
+    implementation(project(":core:data"))
 
     implementation(libs.androidx.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
