@@ -48,6 +48,8 @@ class SqlDelightItemRepositoryTest {
         //Inserting a default category to have a fallback category when deleting
         categoryRepository.insertCategory(defaultCategory)
         categoryRepository.insertCategory(sampleCategory)
+        //Inserting a receipt for the foreign key constrain
+        db.receiptQueries.insert(name = "", date = Instant.fromEpochSeconds(1), currency = Currency.HUF, sumOfPrice = 1, description = null, imageUri = "")
     }
 
     @Test
@@ -222,6 +224,8 @@ class SqlDelightItemRepositoryTest {
 
     @Test
     fun `Select items by receiptId returns with good formatting and order`(){
+        //inserting a fake receipt for foreign key constrains
+        db.receiptQueries.insert(name = "", date = Instant.fromEpochSeconds(1), currency = Currency.HUF, sumOfPrice = 1, description = null, imageUri = "")
         val secondItem = sampleItem.copy(
             id = 2,
             date = Instant.fromEpochSeconds(2),

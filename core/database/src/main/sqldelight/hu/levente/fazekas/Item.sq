@@ -11,7 +11,7 @@ CREATE TABLE Item(
     date INTEGER AS Instant NOT NULL,
     currency TEXT AS Currency NOT NULL,
     receiptId INTEGER NOT NULL,
-    --FOREIGN KEY(receiptId) REFERENCES Receipt(id) ON DELETE CASCADE,
+    FOREIGN KEY(receiptId) REFERENCES Receipt(id) ON DELETE CASCADE,
     FOREIGN KEY(category) REFERENCES ItemCategory(id) ON DELETE SET DEFAULT,
     FOREIGN KEY(itemId) REFERENCES ItemId(itemId)
 );
