@@ -19,7 +19,7 @@ class SqlDelightReceiptRepository(
                 db.tagQueries.insert(tag.name)
                 db.receiptTagCrossRefQueries.insert(
                     receiptId = receipt.id,
-                    tagId = tag.id
+                    tagId = db.tagQueries.selectByName(tag.name).executeAsOne().id
                 )
             }
             receipt.items.forEach{item ->
@@ -38,14 +38,66 @@ class SqlDelightReceiptRepository(
     }
 
     fun deleteReceipt(receiptId: Long){
-        db.receiptQueries.deleteById(receiptId)
+        db.transaction {
+            val tagIds = db.receiptTagCrossRefQueries.selectByReceiptId(receiptId, mapper = {id, _ -> id }).executeAsList()
+            db.receiptQueries.deleteById(receiptId)
+            tagIds.forEach { id ->
+                val receipts = db.receiptTagCrossRefQueries.selectByTagId(id).executeAsList()
+                if (receipts.isEmpty()) {
+                    db.tagQueries.deleteById(id)
+                }
+            }
+        }
     }
 
-    fun updateReceipt(receipt: ReceiptEntity){
+    fun updateReceipt(receipt: ReceiptEntity) {
+        db.transaction {
+            val oldReceipt = selectReceiptById(receipt.id)
+//            if (oldReceipt.items != receipt.items){
+//                val removeItems = oldReceipt.items - receipt.items
+//                val plusItems = receipt.items - oldReceipt.items
+//
+//                removeItems.forEach {item ->
+//                    db.itemQueries.deleteById(item.id)
+//                }
+//                plusItems.forEach {
+//                    db.itemQueries.ad
+//                }
+//            }
+            if (oldReceipt.tags != receipt.tags){
+                val removeTags = oldReceipt.tags - receipt.tags
+                val plusTags = receipt.tags - oldReceipt.tags
 
+                removeTags.forEach { tag ->
+                    val tagId = db.tagQueries.selectByName(tag.name).executeAsOne().id
+                    db.receiptTagCrossRefQueries.deleteById(receiptId = receipt.id, tagId = tagId)
+                    val receipts = db.receiptTagCrossRefQueries.selectByTagId(tagId).executeAsList()
+                    if (receipts.isEmpty()) {
+                        db.tagQueries.deleteById(tagId)
+                    }
+                }
+                plusTags.forEach {tag ->
+                    db.tagQueries.insert(tag.name)
+                    db.receiptTagCrossRefQueries.insert(
+                        receiptId = receipt.id,
+                        tagId = db.tagQueries.selectByName(tag.name).executeAsOne().id
+                    )
+                }
+            }
+
+            db.receiptQueries.update(
+                id = receipt.id,
+                name = receipt.name,
+                date = receipt.date,
+                currency = receipt.currency,
+                sumOfPrice = receipt.sumOfPrice,
+                description = receipt.description,
+                imageUri = receipt.imageUri
+            )
+        }
     }
 
-    fun selectReceiptById(receiptId: Long): ReceiptEntity{
+    fun selectReceiptById(receiptId: Long): ReceiptEntity {
         return db.transactionWithResult {
             val receipt = db.receiptQueries.selectById(receiptId).executeAsOne()
             val items = db.itemQueries.selectByReceiptId(receiptId, mapper = { id, itemId, name, count, price, unit, categoryId,categoryName,categoryColor, date, currency, receiptId ->

@@ -26,3 +26,14 @@ WHERE Receipt.id = :id;
 
 deleteById:
 DELETE FROM Receipt WHERE id = :id;
+
+update:
+UPDATE Receipt
+SET
+name = :name,
+date = :date,
+currency = :currency,
+sumOfPrice = :sumOfPrice,
+description = :description,
+imageUri = :imageUri
+WHERE id = :id;

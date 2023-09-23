@@ -10,6 +10,10 @@ VALUES (:name);
 selectAll:
 SELECT * FROM Tag;
 
+selectByName:
+SELECT * FROM Tag
+WHERE name = :name;
+
 deleteById:
 DELETE FROM Tag
 WHERE id = :id;

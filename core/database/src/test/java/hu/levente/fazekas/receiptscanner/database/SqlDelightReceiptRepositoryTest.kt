@@ -79,6 +79,22 @@ class SqlDelightReceiptRepositoryTest {
     }
 
     @Test
+    fun `Insert Receipt with multiple tags successfully`(){
+        val newTag = TagEntity(2, "Aldi")
+        val receiptWithMultipleTags = sampleReceipt.copy(
+            tags = listOf(sampleTag, newTag)
+        )
+        receiptRepository.insertReceipt(receiptWithMultipleTags)
+
+        val receipt = receiptRepository.selectReceiptById(receiptWithMultipleTags.id)
+        val items = itemRepository.selectAll()
+        val tags = tagRepository.selectByReceiptId(receipt.id)
+        assertThat(receipt).isEqualTo(receiptWithMultipleTags)
+        assertThat(items).containsExactly(*sampleItems.toTypedArray())
+        assertThat(tags).containsExactly(sampleTag, newTag)
+    }
+
+    @Test
     fun `Select all receipt without items`(){
         val secondReceipt = sampleReceipt.copy(
             id = 2,
@@ -108,5 +124,118 @@ class SqlDelightReceiptRepositoryTest {
                 tags = sampleReceipt.tags
             )
         )
+    }
+
+    @Test
+    fun `Delete receipt, receiptRepository and tagRepository becomes empty`(){
+        receiptRepository.insertReceipt(sampleReceipt)
+
+        receiptRepository.deleteReceipt(sampleReceipt.id)
+
+        val receipts = receiptRepository.selectAllReducedReceipt()
+        val tags = tagRepository.selectAllTag()
+        assertThat(receipts).isEmpty()
+        assertThat(tags).isEmpty()
+    }
+
+    @Test
+    fun `Delete receipt with extra tag, receiptRepository becomes empty`(){
+        receiptRepository.insertReceipt(sampleReceipt)
+        tagRepository.insertTag("NewTag")
+
+        receiptRepository.deleteReceipt(sampleReceipt.id)
+
+        val receipts = receiptRepository.selectAllReducedReceipt()
+        val tags = tagRepository.selectAllTag()
+        assertThat(receipts).isEmpty()
+        assertThat(tags).containsExactly(TagEntity(2, "NewTag"))
+    }
+
+    @Test
+    fun `Delete receipt with extra receipt, tagRepository becomes empty`(){
+        val secondReceipt = sampleReceipt.copy(
+            id = 2,
+            name = "Aldi",
+            date = Instant.fromEpochSeconds(2)
+        )
+        val secondReceiptReduced = ReducedReceiptEntity(
+            id = secondReceipt.id,
+            name = secondReceipt.name,
+            date = secondReceipt.date,
+            currency = secondReceipt.currency,
+            sumOfPrice = secondReceipt.sumOfPrice,
+            tags = secondReceipt.tags
+        )
+        receiptRepository.insertReceipt(sampleReceipt)
+        receiptRepository.insertReceipt(secondReceipt)
+
+
+        receiptRepository.deleteReceipt(sampleReceipt.id)
+
+        val receipts = receiptRepository.selectAllReducedReceipt()
+        val tags = tagRepository.selectAllTag()
+        assertThat(receipts).containsExactly(secondReceiptReduced)
+        assertThat(tags).containsExactly(sampleTag)
+    }
+
+    @Test
+    fun `Update receipt name`(){
+        receiptRepository.insertReceipt(sampleReceipt)
+        val updatedReceipt = sampleReceipt.copy(
+            name = "Aldi"
+        )
+
+        receiptRepository.updateReceipt(updatedReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        assertThat(receipt).isEqualTo(updatedReceipt)
+    }
+
+    @Test
+    fun `Update receipt tags, replace tag`(){
+        val newTag = TagEntity(1, "Aldi")
+        val updatedReceipt = sampleReceipt.copy(
+            tags = listOf(newTag)
+        )
+        receiptRepository.insertReceipt(sampleReceipt)
+
+        receiptRepository.updateReceipt(updatedReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val tags = tagRepository.selectAllTag()
+        assertThat(receipt).isEqualTo(updatedReceipt)
+        assertThat(tags).containsExactly(newTag)
+    }
+
+    @Test
+    fun `Update receipt tags, add a new tag`(){
+        val newTag = TagEntity(2, "Aldi")
+        val updatedReceipt = sampleReceipt.copy(
+            tags = listOf(sampleTag, newTag)
+        )
+        receiptRepository.insertReceipt(sampleReceipt)
+
+        receiptRepository.updateReceipt(updatedReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val tags = tagRepository.selectAllTag()
+        assertThat(receipt).isEqualTo(updatedReceipt)
+        assertThat(tags).containsExactly(sampleTag, newTag)
+    }
+
+    @Test
+    fun `Update receipt tags, remove a tag`(){
+        val newTag = TagEntity(2, "Aldi")
+        val updatedReceipt = sampleReceipt.copy(
+            tags = listOf(sampleTag, newTag)
+        )
+        receiptRepository.insertReceipt(updatedReceipt)
+
+        receiptRepository.updateReceipt(sampleReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val tags = tagRepository.selectAllTag()
+        assertThat(receipt).isEqualTo(sampleReceipt)
+        assertThat(tags).containsExactly(sampleTag)
     }
 }

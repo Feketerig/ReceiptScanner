@@ -2,8 +2,8 @@ CREATE TABLE ReceiptTagCrossRef(
     receiptId INTEGER NOT NULL,
     tagId INTEGER NOT NULL,
     PRIMARY KEY (receiptId, tagId),
-    FOREIGN KEY (receiptId) REFERENCES Receipt(id),
-    FOREIGN KEY (tagId) REFERENCES Receipt(id)
+    FOREIGN KEY (receiptId) REFERENCES Receipt(id) ON DELETE CASCADE,
+    FOREIGN KEY (tagId) REFERENCES Tag(id) ON DELETE CASCADE
 );
 
 insert:
@@ -14,6 +14,10 @@ selectByReceiptId:
 SELECT Tag.id, Tag.name FROM ReceiptTagCrossRef
 JOIN Tag ON ReceiptTagCrossRef.tagId = Tag.id
 WHERE ReceiptTagCrossRef.receiptId = :id;
+
+selectByTagId:
+SELECT * FROM ReceiptTagCrossRef
+WHERE ReceiptTagCrossRef.tagId = :tagId;
 
 deleteById:
 DELETE FROM ReceiptTagCrossRef
