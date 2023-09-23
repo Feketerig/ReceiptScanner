@@ -20,4 +20,10 @@ class SqlDelightTagRepository(
     fun updateTag(tag: TagEntity){
         db.tagQueries.update(id = tag.id,name = tag.name)
     }
+
+    fun selectByReceiptId(receiptId: Long): List<TagEntity> {
+        return db.receiptTagCrossRefQueries.selectByReceiptId(receiptId,
+            mapper = { id, name -> TagEntity(id, name) }
+        ).executeAsList()
+    }
 }

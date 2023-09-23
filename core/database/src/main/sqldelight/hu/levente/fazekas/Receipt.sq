@@ -2,7 +2,7 @@ import hu.levente.fazekas.receiptscanner.database.Currency;
 import kotlinx.datetime.Instant;
 
 CREATE TABLE Receipt (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    id INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     date INTEGER AS Instant NOT NULL,
     currency TEXT AS Currency NOT NULL,
@@ -12,12 +12,13 @@ CREATE TABLE Receipt (
 );
 
 insert:
-INSERT OR REPLACE INTO Receipt(id, name, date, currency, sumOfPrice, description, imageUri)
-VALUES(?,?,?, ?,  ?,?,?);
+INSERT INTO Receipt( name, date, currency, sumOfPrice, description, imageUri)
+VALUES(?,?, ?,  ?,?,?);
 
 selectAllReduced:
-SELECT Receipt.id, Receipt.name, date, currency, sumOfPrice
-FROM Receipt;
+SELECT id, name, date, currency, sumOfPrice
+FROM Receipt
+ORDER BY date DESC;
 
 selectById:
 SELECT * FROM Receipt

@@ -4,7 +4,7 @@ CREATE TABLE Tag(
 );
 
 insert:
-INSERT OR ABORT INTO Tag(name)
+INSERT OR IGNORE INTO Tag(name)
 VALUES (:name);
 
 selectAll:

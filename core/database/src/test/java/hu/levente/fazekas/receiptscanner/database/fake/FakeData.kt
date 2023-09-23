@@ -84,6 +84,6 @@ val sampleReceipt = ReceiptEntity(
     sumOfPrice = 5987,
     description = "Egy példa blokk",
     imageUri = "",
+    tags = listOf(sampleTag),
     items = sampleItems
 )
-

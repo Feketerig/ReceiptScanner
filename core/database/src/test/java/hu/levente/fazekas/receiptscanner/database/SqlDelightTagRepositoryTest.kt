@@ -2,15 +2,14 @@ package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.hasMessage
 import assertk.assertions.isEmpty
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
+import kotlinx.datetime.Instant
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Properties
@@ -49,10 +48,10 @@ class SqlDelightTagRepositoryTest {
     @Test
     fun `Insert 2 tags with the same name, throws exception`(){
         tagRepository.insertTag(sampleTag.name)
+        tagRepository.insertTag(sampleTag.name)
 
-        assertFailure {
-            tagRepository.insertTag(sampleTag.name)
-        }.hasMessage("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: Tag.name)")
+        val tags = tagRepository.selectAllTag()
+        assertThat(tags).containsExactly(sampleTag)
     }
 
     @Test
@@ -91,5 +90,25 @@ class SqlDelightTagRepositoryTest {
 
         val tags = tagRepository.selectAllTag()
         assertThat(tags).isEmpty()
+    }
+
+    @Test
+    fun `Select tags by a receiptId`(){
+        tagRepository.insertTag(sampleTag.name)
+        tagRepository.insertTag("NewTag")
+        db.receiptQueries.insert(
+            name = "Test",
+            date = Instant.fromEpochSeconds(1),
+            currency = Currency.HUF,
+            sumOfPrice = 1253,
+            description = null,
+            imageUri = ""
+        )
+        db.receiptTagCrossRefQueries.insert(1, 1)
+
+        val allTags = tagRepository.selectAllTag()
+        val tagsByReceiptId = tagRepository.selectByReceiptId(1)
+        assertThat(allTags).containsExactly(sampleTag, TagEntity(2,"NewTag"))
+        assertThat(tagsByReceiptId).containsExactly(sampleTag)
     }
 }

@@ -10,5 +10,6 @@ data class ReceiptEntity(
     val sumOfPrice: Long,
     val description: String,
     val imageUri: String,
+    val tags: List<TagEntity>,
     val items: List<ItemEntity>
 )

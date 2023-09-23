@@ -7,5 +7,6 @@ data class ReducedReceiptEntity(
     val name: String,
     val date: Instant,
     val currency: Currency,
-    val sumOfPrice: Long
+    val sumOfPrice: Long,
+    val tags: List<TagEntity>
 )
