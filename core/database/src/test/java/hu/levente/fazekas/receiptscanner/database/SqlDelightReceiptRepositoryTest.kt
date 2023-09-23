@@ -2,15 +2,18 @@ package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.defaultCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleCategory
+import hu.levente.fazekas.receiptscanner.database.fake.sampleItems
 import hu.levente.fazekas.receiptscanner.database.fake.sampleReceipt
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Properties
 
 class SqlDelightReceiptRepositoryTest {
@@ -20,7 +23,7 @@ class SqlDelightReceiptRepositoryTest {
     private lateinit var categoryRepository: SqlDelightItemCategoryRepository
     private lateinit var receiptRepository: SqlDelightReceiptRepository
 
-    @Before
+    @BeforeEach
     fun setUp() {
         val driver = JdbcSqliteDriver(
             JdbcSqliteDriver.IN_MEMORY,
@@ -51,7 +54,7 @@ class SqlDelightReceiptRepositoryTest {
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
         val items = itemRepository.selectAll()
-        assertEquals(sampleReceipt, receipt)
-        assertEquals(3, items.size)
+        assertThat(receipt).isEqualTo(sampleReceipt)
+        assertThat(items).containsExactly(sampleItems[0], sampleItems[1], sampleItems[2])
     }
 }

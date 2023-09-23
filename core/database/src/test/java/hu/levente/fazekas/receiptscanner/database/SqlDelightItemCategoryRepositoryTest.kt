@@ -2,19 +2,17 @@ package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.hasMessage
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.defaultCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleCategory
-import hu.levente.fazekas.receiptscanner.database.DateAdapter
-import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
-import hu.levente.fazekas.receiptscanner.database.SqlDelightItemCategoryRepository
-import hu.levente.fazekas.receiptscanner.database.SqlDelightTagRepository
-import org.junit.Assert.*
-
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Properties
 
 class SqlDelightItemCategoryRepositoryTest {
@@ -22,7 +20,7 @@ class SqlDelightItemCategoryRepositoryTest {
     private lateinit var db: ReceiptDatabase
     private lateinit var itemCategoryRepository: SqlDelightItemCategoryRepository
 
-    @Before
+    @BeforeEach
     fun setUp() {
         val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY, schema = ReceiptDatabase.Schema, properties = Properties().apply { put("foreign_keys", "true") })
         db = ReceiptDatabase(
@@ -46,20 +44,16 @@ class SqlDelightItemCategoryRepositoryTest {
         itemCategoryRepository.insertCategory(sampleCategory)
 
         val categories = itemCategoryRepository.selectAllCategory()
-        assertEquals(2, categories.size)
-        assertEquals(defaultCategory, categories[0])
-        assertEquals(sampleCategory, categories[1])
+        assertThat(categories).containsExactly(defaultCategory, sampleCategory)
     }
 
     @Test
     fun `Insert 2 categories with the same name, throws exception`(){
         itemCategoryRepository.insertCategory(sampleCategory)
 
-        val exception = assertThrows(Exception::class.java) {
+        assertFailure {
             itemCategoryRepository.insertCategory(sampleCategory)
-        }
-
-        assertEquals("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ItemCategory.name)", exception.message)
+        }.hasMessage("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ItemCategory.name)")
     }
 
     @Test
@@ -76,9 +70,7 @@ class SqlDelightItemCategoryRepositoryTest {
             }
         ).executeAsList()
 
-        assertEquals(2, categories.size)
-        assertEquals(defaultCategory, categories[0])
-        assertEquals(sampleCategory, categories[1])
+        assertThat(categories).containsExactly(defaultCategory, sampleCategory)
     }
 
     @Test
@@ -88,10 +80,8 @@ class SqlDelightItemCategoryRepositoryTest {
 
         itemCategoryRepository.updateCategory(newCategory)
 
-        val updatedCategories = itemCategoryRepository.selectAllCategory()
-        assertEquals(2, updatedCategories.size)
-        assertEquals(defaultCategory, updatedCategories[0])
-        assertEquals(newCategory, updatedCategories[1])
+        val categories = itemCategoryRepository.selectAllCategory()
+        assertThat(categories).containsExactly(defaultCategory, newCategory)
     }
 
     @Test
@@ -101,10 +91,8 @@ class SqlDelightItemCategoryRepositoryTest {
 
         itemCategoryRepository.updateCategory(newCategory)
 
-        val updatedCategories = itemCategoryRepository.selectAllCategory()
-        assertEquals(2, updatedCategories.size)
-        assertEquals(defaultCategory, updatedCategories[0])
-        assertEquals(newCategory, updatedCategories[1])
+        val categories = itemCategoryRepository.selectAllCategory()
+        assertThat(categories).containsExactly(defaultCategory, newCategory)
     }
 
     @Test
@@ -113,8 +101,7 @@ class SqlDelightItemCategoryRepositoryTest {
 
         itemCategoryRepository.deleteCategory(sampleCategory.id)
 
-        val deletedCategories = itemCategoryRepository.selectAllCategory()
-        assertEquals(1, deletedCategories.size)
-        assertEquals(defaultCategory, deletedCategories[0])
+        val categories = itemCategoryRepository.selectAllCategory()
+        assertThat(categories).containsExactly(defaultCategory)
     }
 }

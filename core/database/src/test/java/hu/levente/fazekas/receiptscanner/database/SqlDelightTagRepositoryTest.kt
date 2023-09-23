@@ -2,17 +2,17 @@ package hu.levente.fazekas.receiptscanner.database
 
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.hasMessage
+import assertk.assertions.isEmpty
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
-import hu.levente.fazekas.receiptscanner.database.DateAdapter
-import hu.levente.fazekas.receiptscanner.database.SqlDelightTagRepository
-import hu.levente.fazekas.receiptscanner.database.TagEntity
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Properties
 
 
@@ -21,7 +21,7 @@ class SqlDelightTagRepositoryTest {
     private lateinit var db: ReceiptDatabase
     private lateinit var tagRepository: SqlDelightTagRepository
 
-    @Before
+    @BeforeEach
     fun setUp() {
         val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY, schema = ReceiptDatabase.Schema, properties = Properties().apply { put("foreign_keys", "true") })
         db = ReceiptDatabase(
@@ -43,19 +43,16 @@ class SqlDelightTagRepositoryTest {
         tagRepository.insertTag(sampleTag.name)
 
         val tags = tagRepository.selectAllTag()
-        assertEquals(1, tags.size)
-        assertEquals(sampleTag, tags[0])
+        assertThat(tags).containsExactly(sampleTag)
     }
 
     @Test
     fun `Insert 2 tags with the same name, throws exception`(){
         tagRepository.insertTag(sampleTag.name)
 
-        val exception = assertThrows(Exception::class.java) {
+        assertFailure {
             tagRepository.insertTag(sampleTag.name)
-        }
-
-        assertEquals("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: Tag.name)", exception.message)
+        }.hasMessage("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: Tag.name)")
     }
 
     @Test
@@ -71,8 +68,7 @@ class SqlDelightTagRepositoryTest {
             }
         ).executeAsList()
 
-        assertEquals(1, tags.size)
-        assertEquals(sampleTag, tags[0])
+        assertThat(tags).containsExactly(sampleTag)
     }
 
     @Test
@@ -83,9 +79,8 @@ class SqlDelightTagRepositoryTest {
         tagRepository.updateTag(newTag)
 
 
-        val updatedTags = tagRepository.selectAllTag()
-        assertEquals(1, updatedTags.size)
-        assertEquals(newTag, updatedTags[0])
+        val tags = tagRepository.selectAllTag()
+        assertThat(tags).containsExactly(newTag)
     }
 
     @Test
@@ -94,7 +89,7 @@ class SqlDelightTagRepositoryTest {
 
         tagRepository.deleteTag(sampleTag.id)
 
-        val deletedTags = tagRepository.selectAllTag()
-        assertEquals(0, deletedTags.size)
+        val tags = tagRepository.selectAllTag()
+        assertThat(tags).isEmpty()
     }
 }
