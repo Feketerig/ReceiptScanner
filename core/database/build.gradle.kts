@@ -3,14 +3,15 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.android.junit5)
 }
 
 android {
     namespace = "hu.levente.fazekas.database"
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -34,6 +35,15 @@ dependencies {
     //KotlinxDateTime
     implementation(libs.kotlinx.datetime)
 
-    testImplementation(libs.junit)
+    
+    //JUnit 5
+    testImplementation(libs.junit5.jupiter.api)
+    testRuntimeOnly(libs.junit5.jupiter.engine)
+    testImplementation(libs.junit5.jupiter.params)
+
+    //AssertK
+    testImplementation(libs.assertK)
+
+    //JVM SqlDelight driver for testing
     testImplementation(libs.sqlDelight.sqlite.driver)
 }
