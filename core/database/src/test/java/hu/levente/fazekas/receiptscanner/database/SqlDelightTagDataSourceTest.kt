@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test
 import java.util.Properties
 
 
-class SqlDelightTagRepositoryTest {
+class SqlDelightTagDataSourceTest {
 
     private lateinit var db: ReceiptDatabase
-    private lateinit var tagRepository: SqlDelightTagRepository
+    private lateinit var tagRepository: SqlDelightTagDataSource
 
     @BeforeEach
     fun setUp() {
@@ -34,7 +34,7 @@ class SqlDelightTagRepositoryTest {
                 currencyAdapter = EnumColumnAdapter()
             )
         )
-        tagRepository = SqlDelightTagRepository(db)
+        tagRepository = SqlDelightTagDataSource(db)
     }
 
     @Test

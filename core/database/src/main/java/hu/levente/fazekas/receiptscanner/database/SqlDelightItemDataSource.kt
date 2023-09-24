@@ -2,7 +2,7 @@ package hu.levente.fazekas.receiptscanner.database
 
 import hu.levente.fazekas.database.ReceiptDatabase
 
-class SqlDelightItemRepository(
+class SqlDelightItemDataSource(
     val db: ReceiptDatabase
 ) {
     fun selectAll(): List<ItemEntity>{

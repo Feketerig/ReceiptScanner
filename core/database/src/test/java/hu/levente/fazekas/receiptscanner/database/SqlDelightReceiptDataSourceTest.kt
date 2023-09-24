@@ -19,13 +19,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Properties
 
-class SqlDelightReceiptRepositoryTest {
+class SqlDelightReceiptDataSourceTest {
 
     private lateinit var db: ReceiptDatabase
-    private lateinit var itemRepository: SqlDelightItemRepository
-    private lateinit var categoryRepository: SqlDelightItemCategoryRepository
-    private lateinit var receiptRepository: SqlDelightReceiptRepository
-    private lateinit var tagRepository: SqlDelightTagRepository
+    private lateinit var itemRepository: SqlDelightItemDataSource
+    private lateinit var categoryRepository: SqlDelightItemCategoryDataSource
+    private lateinit var receiptRepository: SqlDelightReceiptDataSource
+    private lateinit var tagRepository: SqlDelightTagDataSource
 
     @BeforeEach
     fun setUp() {
@@ -44,13 +44,13 @@ class SqlDelightReceiptRepositoryTest {
                 currencyAdapter = EnumColumnAdapter()
             )
         )
-        itemRepository = SqlDelightItemRepository(db)
-        categoryRepository = SqlDelightItemCategoryRepository(db)
+        itemRepository = SqlDelightItemDataSource(db)
+        categoryRepository = SqlDelightItemCategoryDataSource(db)
         //Inserting a default category to have a fallback category when deleting
         categoryRepository.insertCategory(defaultCategory)
         categoryRepository.insertCategory(sampleCategory)
-        receiptRepository = SqlDelightReceiptRepository(db, itemRepository)
-        tagRepository = SqlDelightTagRepository(db)
+        receiptRepository = SqlDelightReceiptDataSource(db, itemRepository)
+        tagRepository = SqlDelightTagDataSource(db)
     }
 
     @Test

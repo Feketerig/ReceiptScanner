@@ -20,11 +20,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Properties
 
-class SqlDelightItemRepositoryTest {
+class SqlDelightItemDataSourceTest {
 
     private lateinit var db: ReceiptDatabase
-    private lateinit var itemRepository: SqlDelightItemRepository
-    private lateinit var categoryRepository: SqlDelightItemCategoryRepository
+    private lateinit var itemRepository: SqlDelightItemDataSource
+    private lateinit var categoryRepository: SqlDelightItemCategoryDataSource
 
     @BeforeEach
     fun setUp() {
@@ -43,8 +43,8 @@ class SqlDelightItemRepositoryTest {
                 currencyAdapter = EnumColumnAdapter()
             )
         )
-        itemRepository = SqlDelightItemRepository(db)
-        categoryRepository = SqlDelightItemCategoryRepository(db)
+        itemRepository = SqlDelightItemDataSource(db)
+        categoryRepository = SqlDelightItemCategoryDataSource(db)
         //Inserting a default category to have a fallback category when deleting
         categoryRepository.insertCategory(defaultCategory)
         categoryRepository.insertCategory(sampleCategory)

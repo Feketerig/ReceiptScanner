@@ -7,23 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
-import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
-import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
-import hu.levente.fazekas.receiptscanner.database.ItemEntity
-import hu.levente.fazekas.receiptscanner.database.SqlDelightItemCategoryRepository
-import hu.levente.fazekas.receiptscanner.database.SqlDelightItemRepository
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

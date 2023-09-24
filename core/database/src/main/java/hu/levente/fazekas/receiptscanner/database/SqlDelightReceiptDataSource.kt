@@ -2,9 +2,9 @@ package hu.levente.fazekas.receiptscanner.database
 
 import hu.levente.fazekas.database.ReceiptDatabase
 
-class SqlDelightReceiptRepository(
+class SqlDelightReceiptDataSource(
     val db: ReceiptDatabase,
-    val itemRepository: SqlDelightItemRepository
+    val itemRepository: SqlDelightItemDataSource
 ) {
     fun insertReceipt(receipt: ReceiptEntity){
         db.transaction {
