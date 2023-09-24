@@ -3,7 +3,8 @@ package hu.levente.fazekas.receiptscanner.database
 import hu.levente.fazekas.database.ReceiptDatabase
 
 class SqlDelightReceiptRepository(
-    val db: ReceiptDatabase
+    val db: ReceiptDatabase,
+    val itemRepository: SqlDelightItemRepository
 ) {
     fun insertReceipt(receipt: ReceiptEntity){
         db.transaction {
@@ -23,16 +24,7 @@ class SqlDelightReceiptRepository(
                 )
             }
             receipt.items.forEach{item ->
-                db.itemQueries.insert(
-                    itemName = item.name,
-                    categoryId = item.category.id,
-                    quantity = item.quantity,
-                    price = item.price,
-                    unit = item.unit,
-                    date = item.date,
-                    currency = item.currency,
-                    receiptId = receipt.id,
-                )
+                itemRepository.insertItem(item)
             }
         }
     }
@@ -57,26 +49,27 @@ class SqlDelightReceiptRepository(
                 val removeItems = oldReceipt.items - receipt.items
                 val plusItems = receipt.items - oldReceipt.items
 
-                removeItems.forEach {item ->
-                    val itemId = db.itemQueries.selectById(item.id).executeAsOne().itemId
-                    db.itemQueries.deleteById(item.id)
-                    val itemsWithSameItemId = db.itemQueries.selectAllByItemId(itemId).executeAsList()
-                    if (itemsWithSameItemId.isEmpty()){
-                        db.itemIdQueries.deleteById(itemId)
+                plusItems.forEach { item ->
+                    if (removeItems.map { it.id }.contains(item.id)){
+                        itemRepository.updateItem(item)
                     }
                 }
-                plusItems.forEach {item ->
-                    db.itemQueries.insert(
-                        itemName = item.name,
-                        categoryId = item.category.id,
-                        quantity = item.quantity,
-                        price = item.price,
-                        unit = item.unit,
-                        date = item.date,
-                        currency = item.currency,
-                        receiptId = item.receiptId
-                    )
-                }
+
+//                removeItems.forEach {item ->
+//                    itemRepository.deleteItem(item.id)
+//                }
+//                plusItems.forEach {item ->
+//                    db.itemQueries.insert(
+//                        itemName = item.name,
+//                        categoryId = item.category.id,
+//                        quantity = item.quantity,
+//                        price = item.price,
+//                        unit = item.unit,
+//                        date = item.date,
+//                        currency = item.currency,
+//                        receiptId = item.receiptId
+//                    )
+//                }
             }
             if (oldReceipt.tags != receipt.tags){
                 val removeTags = oldReceipt.tags - receipt.tags

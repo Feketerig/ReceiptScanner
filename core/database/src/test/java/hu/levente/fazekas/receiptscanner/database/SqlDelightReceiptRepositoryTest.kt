@@ -49,7 +49,7 @@ class SqlDelightReceiptRepositoryTest {
         //Inserting a default category to have a fallback category when deleting
         categoryRepository.insertCategory(defaultCategory)
         categoryRepository.insertCategory(sampleCategory)
-        receiptRepository = SqlDelightReceiptRepository(db)
+        receiptRepository = SqlDelightReceiptRepository(db, itemRepository)
         tagRepository = SqlDelightTagRepository(db)
     }
 
@@ -300,5 +300,31 @@ class SqlDelightReceiptRepositoryTest {
         val items = itemRepository.selectAll()
         assertThat(receipt).isEqualTo(sampleReceipt)
         assertThat(items).containsExactly(sampleItems[0], sampleItems[1], sampleItems[2])
+    }
+
+    @Test
+    fun `Update receipt items, update item category`(){
+        val newCategory = ItemCategoryEntity(
+            id = 3,
+            name = "Aldi",
+            color = null
+        )
+        val newItem = sampleItems[1].copy(
+            category = newCategory
+        )
+        val updatedReceipt = sampleReceipt.copy(
+            items = listOf(sampleItems[0], newItem, sampleItems[2])
+        )
+        receiptRepository.insertReceipt(sampleReceipt)
+        categoryRepository.insertCategory(newCategory)
+
+        receiptRepository.updateReceipt(updatedReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val items = itemRepository.selectAll()
+        val categories = categoryRepository.selectAllCategory()
+        assertThat(receipt).isEqualTo(sampleReceipt)
+        assertThat(items).containsExactly(sampleItems[0], newItem, sampleItems[2])
+        assertThat(categories).containsExactly(defaultCategory, sampleCategory, newCategory)
     }
 }

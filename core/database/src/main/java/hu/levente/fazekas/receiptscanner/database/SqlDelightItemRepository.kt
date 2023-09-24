@@ -132,7 +132,7 @@ class SqlDelightItemRepository(
                 db.itemIdQueries.update(itemId = newItemEntity.itemId,name = newItemEntity.name)
             }
             if (oldItem.categoryId != newItemEntity.category.id) {
-                db.itemCategoryQueries.deleteById(oldItem.categoryId)
+                //db.itemCategoryQueries.deleteById(oldItem.categoryId)
                 db.itemCategoryQueries.insert(
                     newItemEntity.category.name,
                     newItemEntity.category.color
