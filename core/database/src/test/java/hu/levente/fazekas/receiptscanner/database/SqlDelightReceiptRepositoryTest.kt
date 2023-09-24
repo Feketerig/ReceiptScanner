@@ -238,4 +238,67 @@ class SqlDelightReceiptRepositoryTest {
         assertThat(receipt).isEqualTo(sampleReceipt)
         assertThat(tags).containsExactly(sampleTag)
     }
+
+    @Test
+    fun `Update receipt items, replace item`(){
+        val newItem = sampleItems[1].copy(
+            id = 4,
+            itemId = 3,
+            name = "Alma",
+            date = Instant.fromEpochSeconds(4)
+        )
+        val updatedReceipt = sampleReceipt.copy(
+            items = listOf(newItem, sampleItems[0], sampleItems[2])
+        )
+        receiptRepository.insertReceipt(sampleReceipt)
+
+        receiptRepository.updateReceipt(updatedReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val items = itemRepository.selectAll()
+        assertThat(receipt).isEqualTo(updatedReceipt)
+        assertThat(items).containsExactly(newItem, sampleItems[0], sampleItems[2])
+    }
+
+    @Test
+    fun `Update receipt items, add a new item`(){
+        val newItem = sampleItems[1].copy(
+            id = 4,
+            itemId = 3,
+            name = "Alma",
+            date = Instant.fromEpochSeconds(4)
+        )
+        val updatedReceipt = sampleReceipt.copy(
+            items = listOf(newItem, sampleItems[0], sampleItems[1], sampleItems[2])
+        )
+        receiptRepository.insertReceipt(sampleReceipt)
+
+        receiptRepository.updateReceipt(updatedReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val items = itemRepository.selectAll()
+        assertThat(receipt).isEqualTo(updatedReceipt)
+        assertThat(items).containsExactly(newItem, sampleItems[0], sampleItems[1], sampleItems[2])
+    }
+
+    @Test
+    fun `Update receipt items, remove a item`(){
+        val newItem = sampleItems[1].copy(
+            id = 4,
+            itemId = 3,
+            name = "Alma",
+            date = Instant.fromEpochSeconds(4)
+        )
+        val updatedReceipt = sampleReceipt.copy(
+            items = listOf(newItem, sampleItems[0], sampleItems[1], sampleItems[2])
+        )
+        receiptRepository.insertReceipt(updatedReceipt)
+
+        receiptRepository.updateReceipt(sampleReceipt)
+
+        val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
+        val items = itemRepository.selectAll()
+        assertThat(receipt).isEqualTo(sampleReceipt)
+        assertThat(items).containsExactly(sampleItems[0], sampleItems[1], sampleItems[2])
+    }
 }

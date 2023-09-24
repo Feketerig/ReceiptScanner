@@ -53,17 +53,31 @@ class SqlDelightReceiptRepository(
     fun updateReceipt(receipt: ReceiptEntity) {
         db.transaction {
             val oldReceipt = selectReceiptById(receipt.id)
-//            if (oldReceipt.items != receipt.items){
-//                val removeItems = oldReceipt.items - receipt.items
-//                val plusItems = receipt.items - oldReceipt.items
-//
-//                removeItems.forEach {item ->
-//                    db.itemQueries.deleteById(item.id)
-//                }
-//                plusItems.forEach {
-//                    db.itemQueries.ad
-//                }
-//            }
+            if (oldReceipt.items != receipt.items){
+                val removeItems = oldReceipt.items - receipt.items
+                val plusItems = receipt.items - oldReceipt.items
+
+                removeItems.forEach {item ->
+                    val itemId = db.itemQueries.selectById(item.id).executeAsOne().itemId
+                    db.itemQueries.deleteById(item.id)
+                    val itemsWithSameItemId = db.itemQueries.selectAllByItemId(itemId).executeAsList()
+                    if (itemsWithSameItemId.isEmpty()){
+                        db.itemIdQueries.deleteById(itemId)
+                    }
+                }
+                plusItems.forEach {item ->
+                    db.itemQueries.insert(
+                        itemName = item.name,
+                        categoryId = item.category.id,
+                        quantity = item.quantity,
+                        price = item.price,
+                        unit = item.unit,
+                        date = item.date,
+                        currency = item.currency,
+                        receiptId = item.receiptId
+                    )
+                }
+            }
             if (oldReceipt.tags != receipt.tags){
                 val removeTags = oldReceipt.tags - receipt.tags
                 val plusTags = receipt.tags - oldReceipt.tags
