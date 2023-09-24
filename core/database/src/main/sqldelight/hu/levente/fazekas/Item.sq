@@ -16,6 +16,9 @@ CREATE TABLE Item(
     FOREIGN KEY(itemId) REFERENCES ItemId(itemId)
 );
 
+CREATE INDEX IF NOT EXISTS itemReceiptIdIndex
+ON Item(receiptId);
+
 insert{
 INSERT OR IGNORE INTO ItemId(name) VALUES (:itemName);
 

@@ -3,6 +3,9 @@ CREATE TABLE Tag(
     name TEXT NOT NULL UNIQUE
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS tagIndex
+ON Tag(name);
+
 insert:
 INSERT OR IGNORE INTO Tag(name)
 VALUES (:name);
