@@ -130,6 +130,29 @@ class SqlDelightReceiptDataSource(
                 items = items
             )
         }
+//        return db.transactionWithResult {
+//            val receipt = db.receiptQueries.selectById(receiptId).asFlow().mapToOne(context)
+//            val items = db.itemQueries.selectByReceiptId(receiptId, mapper = { id, itemId, name, count, price, unit, categoryId,categoryName,categoryColor, date, currency, receiptId ->
+//                ItemEntity(id, itemId,name,count,price,unit, ItemCategoryEntity(categoryId, categoryName,categoryColor),date,currency, receiptId)
+//            }).asFlow().mapToList(context)
+//            val tags = db.receiptTagCrossRefQueries.selectByReceiptId(receiptId, mapper = { id, name -> TagEntity(id, name) }).asFlow().mapToList(context)
+//
+//            items.combine(tags){ items, tags ->
+//                items to tags
+//            }.combine(receipt){ itemsWithTags, receipt ->
+//                ReceiptEntity(
+//                    id = receipt.id,
+//                    name = receipt.name,
+//                    date = receipt.date,
+//                    currency = receipt.currency,
+//                    sumOfPrice = receipt.sumOfPrice,
+//                    description = receipt.description ?: "",
+//                    imageUri = receipt.imageUri,
+//                    tags = itemsWithTags.second,
+//                    items = itemsWithTags.first
+//                )
+//            }
+//        }
     }
 
     fun selectAllReducedReceipt(): List<ReducedReceiptEntity>{
