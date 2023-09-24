@@ -131,13 +131,7 @@ class SqlDelightItemRepository(
             } else if (oldItem.name != newItemEntity.name) {
                 db.itemIdQueries.update(itemId = newItemEntity.itemId,name = newItemEntity.name)
             }
-            if (oldItem.categoryId != newItemEntity.category.id) {
-                //db.itemCategoryQueries.deleteById(oldItem.categoryId)
-                db.itemCategoryQueries.insert(
-                    newItemEntity.category.name,
-                    newItemEntity.category.color
-                )
-            } else if (oldItem.categoryName != newItemEntity.category.name || oldItem.categoryColor != newItemEntity.category.color) {
+             if (oldItem.categoryName != newItemEntity.category.name || oldItem.categoryColor != newItemEntity.category.color) {
                 db.itemCategoryQueries.update(
                     id = newItemEntity.category.id,
                     name = newItemEntity.category.name,

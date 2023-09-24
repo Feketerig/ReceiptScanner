@@ -290,7 +290,7 @@ class SqlDelightReceiptRepositoryTest {
             date = Instant.fromEpochSeconds(4)
         )
         val updatedReceipt = sampleReceipt.copy(
-            items = listOf(newItem, sampleItems[0], sampleItems[1], sampleItems[2])
+            items = listOf(sampleItems[0], sampleItems[1], sampleItems[2], newItem)
         )
         receiptRepository.insertReceipt(updatedReceipt)
 
@@ -323,7 +323,7 @@ class SqlDelightReceiptRepositoryTest {
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
         val items = itemRepository.selectAll()
         val categories = categoryRepository.selectAllCategory()
-        assertThat(receipt).isEqualTo(sampleReceipt)
+        assertThat(receipt).isEqualTo(updatedReceipt)
         assertThat(items).containsExactly(sampleItems[0], newItem, sampleItems[2])
         assertThat(categories).containsExactly(defaultCategory, sampleCategory, newCategory)
     }

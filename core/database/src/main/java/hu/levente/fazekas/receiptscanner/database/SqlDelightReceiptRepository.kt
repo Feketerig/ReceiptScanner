@@ -46,30 +46,36 @@ class SqlDelightReceiptRepository(
         db.transaction {
             val oldReceipt = selectReceiptById(receipt.id)
             if (oldReceipt.items != receipt.items){
-                val removeItems = oldReceipt.items - receipt.items
-                val plusItems = receipt.items - oldReceipt.items
+                val removeItems = oldReceipt.items - receipt.items.toSet()
+                val plusItems = receipt.items - oldReceipt.items.toSet()
+                val updatedRemoveItems = removeItems.toMutableList()
+                val updatedPlusItems = plusItems.toMutableList()
 
-                plusItems.forEach { item ->
-                    if (removeItems.map { it.id }.contains(item.id)){
-                        itemRepository.updateItem(item)
+                plusItems.forEach { plusItem ->
+                    removeItems.forEach {removeItem ->
+                        if (removeItem.id == plusItem.id){
+                            itemRepository.updateItem(plusItem)
+                            updatedRemoveItems.remove(removeItem)
+                            updatedPlusItems.remove(plusItem)
+                        }
                     }
                 }
 
-//                removeItems.forEach {item ->
-//                    itemRepository.deleteItem(item.id)
-//                }
-//                plusItems.forEach {item ->
-//                    db.itemQueries.insert(
-//                        itemName = item.name,
-//                        categoryId = item.category.id,
-//                        quantity = item.quantity,
-//                        price = item.price,
-//                        unit = item.unit,
-//                        date = item.date,
-//                        currency = item.currency,
-//                        receiptId = item.receiptId
-//                    )
-//                }
+                updatedRemoveItems.forEach {item ->
+                    itemRepository.deleteItem(item.id)
+                }
+                updatedPlusItems.forEach {item ->
+                    db.itemQueries.insert(
+                        itemName = item.name,
+                        categoryId = item.category.id,
+                        quantity = item.quantity,
+                        price = item.price,
+                        unit = item.unit,
+                        date = item.date,
+                        currency = item.currency,
+                        receiptId = item.receiptId
+                    )
+                }
             }
             if (oldReceipt.tags != receipt.tags){
                 val removeTags = oldReceipt.tags - receipt.tags
