@@ -1,0 +1,27 @@
+CREATE TABLE LastPrice (
+    itemId INTEGER NOT NULL PRIMARY KEY,
+    lastPrice REAL NOT NULL,
+    unit Text NOT NULL,
+    FOREIGN KEY(itemId) REFERENCES ItemId(itemId) ON DELETE CASCADE
+);
+
+CREATE TRIGGER IF NOT EXISTS insertLastPrice
+AFTER INSERT ON Item
+FOR EACH ROW
+BEGIN
+INSERT OR REPLACE INTO LastPrice(itemId, lastPrice, unit)
+VALUES (new.itemId,new.price, new.unit);
+END;
+
+CREATE TRIGGER IF NOT EXISTS updateLastPrice
+AFTER UPDATE ON Item
+FOR EACH ROW
+WHEN old.itemId != new.itemId
+BEGIN
+INSERT OR REPLACE INTO LastPrice(itemId, lastPrice, unit)
+VALUES (new.itemId,new.price, new.unit);
+END;
+
+selectLastPriceByItemId:
+SELECT * FROM LastPrice
+WHERE itemId = :itemId;

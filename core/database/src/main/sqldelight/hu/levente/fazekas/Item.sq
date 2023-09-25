@@ -1,0 +1,91 @@
+import hu.levente.fazekas.receiptscanner.database.Currency;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE Item(
+    id INTEGER NOT NULL PRIMARY KEY,
+    itemId INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    price Real NOT NULL, --price per measurement unit
+    unit Text NOT NULL, --measurement unit
+    category INTEGER NOT NULL DEFAULT 1,
+    date INTEGER AS Instant NOT NULL,
+    currency TEXT AS Currency NOT NULL,
+    receiptId INTEGER NOT NULL,
+    FOREIGN KEY(receiptId) REFERENCES Receipt(id) ON DELETE CASCADE,
+    FOREIGN KEY(category) REFERENCES ItemCategory(id) ON DELETE SET DEFAULT,
+    FOREIGN KEY(itemId) REFERENCES ItemId(itemId)
+);
+
+CREATE INDEX IF NOT EXISTS itemReceiptIdIndex
+ON Item(receiptId);
+
+insert{
+INSERT OR IGNORE INTO ItemId(name) VALUES (:itemName);
+
+INSERT INTO Item(itemId, quantity, price, unit, category, date, currency, receiptId)
+VALUES ((SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
+:quantity,
+:price,
+:unit,
+:categoryId,
+:date,
+:currency,
+:receiptId
+);
+}
+
+selectById:
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+FROM Item
+JOIN ItemCategory ON Item.category = ItemCategory.id
+JOIN ItemId ON Item.itemId = ItemId.itemId
+WHERE Item.id = :id;
+
+selectAll:
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+FROM Item
+JOIN ItemCategory ON Item.category = ItemCategory.id
+JOIN ItemId ON Item.itemId = ItemId.itemId
+ORDER BY Item.date DESC;
+
+selectAllByItemId:
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+FROM Item
+JOIN ItemCategory ON Item.category = ItemCategory.id
+JOIN ItemId ON Item.itemId = ItemId.itemId
+WHERE Item.itemId = :itemId
+ORDER BY Item.date DESC;
+
+selectAllByCategory:
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+FROM Item
+JOIN ItemCategory, ItemId ON
+Item.category = ItemCategory.id AND
+Item.itemId = ItemId.itemId
+WHERE Item.category = :categoyId
+ORDER BY Item.date DESC;
+
+selectByReceiptId:
+SELECT Item.id, Item.itemId, ItemId.name, quantity, price, unit, ItemCategory.id AS categoryId, ItemCategory.name AS categoryName, ItemCategory.color AS categoryColor, date, currency, receiptId
+FROM Item
+JOIN ItemCategory ON Item.category = ItemCategory.id
+JOIN ItemId ON Item.itemId = ItemId.itemId
+WHERE receiptId = :id
+ORDER BY Item.date DESC;
+
+deleteById:
+DELETE FROM Item
+WHERE id = :id;
+
+update:
+UPDATE Item
+SET
+itemId = (SELECT ItemId.itemId FROM ItemId WHERE ItemId.name = :itemName),
+quantity = :quantity,
+price = :price,
+unit = :unit,
+category = (SELECT ItemCategory.id FROM ItemCategory WHERE ItemCategory.name = :categoryName),
+date = :date,
+currency = :currency,
+receiptId = :receiptId
+WHERE id = :id;

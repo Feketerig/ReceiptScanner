@@ -1,0 +1,23 @@
+CREATE TABLE ItemCategory(
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    color INTEGER
+);
+
+insert:
+INSERT OR ABORT INTO ItemCategory(name, color)
+VALUES( :name, :color);
+
+selectAll:
+SELECT * FROM ItemCategory;
+
+deleteById:
+DELETE FROM ItemCategory
+WHERE id = :id;
+
+update:
+UPDATE ItemCategory
+SET
+name = :name,
+color = :color
+WHERE id = :id;

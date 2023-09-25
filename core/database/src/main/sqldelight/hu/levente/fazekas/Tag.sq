@@ -1,0 +1,27 @@
+CREATE TABLE Tag(
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS tagIndex
+ON Tag(name);
+
+insert:
+INSERT OR IGNORE INTO Tag(name)
+VALUES (:name);
+
+selectAll:
+SELECT * FROM Tag;
+
+selectByName:
+SELECT * FROM Tag
+WHERE name = :name;
+
+deleteById:
+DELETE FROM Tag
+WHERE id = :id;
+
+update:
+UPDATE Tag
+SET name = :name
+WHERE id = :id;

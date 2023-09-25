@@ -50,15 +50,10 @@ android {
     }
 }
 
-sqldelight{
-    databases{
-        create("ReceiptDatabase"){
-            packageName.set("hu.levente.fazekas")
-        }
-    }
-}
-
 dependencies {
+
+    implementation(project(":core:database")) //TODO Remove this
+    implementation(project(":core:data"))
 
     implementation(libs.androidx.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -74,13 +69,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //SqlDelight
-    implementation(libs.android.driver)
-
     //Ktor
     implementation(libs.ktor.client.okhttp)
 
     implementation(libs.kotlinx.coroutines.core)
+
+    //SqlDriver
+    implementation(libs.sqlDelight.android.driver)
+    implementation(libs.sqlDelight.primitive.adapters)
 
     //KotlinxDateTime
     implementation(libs.kotlinx.datetime)

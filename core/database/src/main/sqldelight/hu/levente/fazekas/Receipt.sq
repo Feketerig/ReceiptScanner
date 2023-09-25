@@ -1,0 +1,39 @@
+import hu.levente.fazekas.receiptscanner.database.Currency;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE Receipt (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    date INTEGER AS Instant NOT NULL,
+    currency TEXT AS Currency NOT NULL,
+    sumOfPrice INTEGER NOT NULL,
+    description TEXT,
+    imageUri TEXT NOT NULL
+);
+
+insert:
+INSERT INTO Receipt( name, date, currency, sumOfPrice, description, imageUri)
+VALUES(?,?, ?,  ?,?,?);
+
+selectAllReduced:
+SELECT id, name, date, currency, sumOfPrice
+FROM Receipt
+ORDER BY date DESC;
+
+selectById:
+SELECT * FROM Receipt
+WHERE Receipt.id = :id;
+
+deleteById:
+DELETE FROM Receipt WHERE id = :id;
+
+update:
+UPDATE Receipt
+SET
+name = :name,
+date = :date,
+currency = :currency,
+sumOfPrice = :sumOfPrice,
+description = :description,
+imageUri = :imageUri
+WHERE id = :id;
