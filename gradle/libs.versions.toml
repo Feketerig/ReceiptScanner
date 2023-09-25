@@ -22,6 +22,8 @@ minSdk = "24"
 android-junit5 = "1.9.3.0"
 junit5 = "5.10.0"
 assertK = "0.27.0"
+appcompat = "1.6.1"
+material = "1.9.0"
 
 
 [libraries]
@@ -53,6 +55,8 @@ junit5-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.r
 junit5-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 junit5-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
 assertK = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertK" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]
