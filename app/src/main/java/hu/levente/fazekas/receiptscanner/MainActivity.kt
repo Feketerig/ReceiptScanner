@@ -4,8 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.EnumColumnAdapter
@@ -22,7 +35,7 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightItemCategoryDataSour
 import hu.levente.fazekas.receiptscanner.database.SqlDelightItemDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
-import hu.levente.fazekas.receiptscanner.presentation.Category
+import hu.levente.fazekas.receiptscanner.presentation.ReceiptCategory
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
@@ -58,24 +71,54 @@ class MainActivity : ComponentActivity() {
 //        receiptDataSource.insertReceipt(sampleReceipt)
 //        receiptDataSource.insertReceipt(sampleReceipt2)
 //        receiptDataSource.insertReceipt(sampleReceipt3)
-        val reducedReceipts = receiptDataSource.selectAllReducedReceipt().groupBy {
+        val receipts = receiptDataSource.selectAllReducedReceipt()
+        val receipts1 = receipts + receipts +receipts + receipts + receipts + receipts + receipts
+        val reducedReceipts = receipts1.groupBy {
             Sort(it.date.toLocalDateTime(TimeZone.currentSystemDefault()).year,it.date.toLocalDateTime(TimeZone.currentSystemDefault()).month)
         }
         .toSortedMap(compareByDescending<Sort> { it.year }.thenByDescending { it.month })
             .map {
-                Category(
-                    name = it.key.month.name,
-                    items = it.value
+                ReceiptCategory(
+                    headerText = it.key.year.toString() + " " + it.key.month.name,
+                    receipts = it.value
                 )
             }
         setContent {
             ReceiptScannerTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ReceiptList(reducedReceipts)
+                    val listState = rememberLazyListState()
+                    val expandedFab by remember {
+                        derivedStateOf {
+                            listState.firstVisibleItemIndex == 0
+                        }
+                    }
+
+                    Scaffold(
+                        floatingActionButton = {
+                            ExtendedFloatingActionButton(
+                                onClick = { /*TODO*/ },
+                                expanded = expandedFab,
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add new receipt"
+                                    )
+                                },
+                                text = { Text(text = "Create receipt") },
+                                shape = CircleShape
+                            )
+                        },
+                        floatingActionButtonPosition = FabPosition.Center,
+                    ) { paddingValues ->
+                        ReceiptList(
+                            receipts = reducedReceipts,
+                            lazyListState = listState,
+                            modifier = Modifier.padding(paddingValues))
+
+                    }
                 }
             }
         }
