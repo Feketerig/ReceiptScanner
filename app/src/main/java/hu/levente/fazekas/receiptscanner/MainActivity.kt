@@ -3,6 +3,7 @@ package hu.levente.fazekas.receiptscanner
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -37,6 +38,7 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptCategory
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
+import hu.levente.fazekas.receiptscanner.presentation.SearchTextField
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
@@ -113,10 +115,19 @@ class MainActivity : ComponentActivity() {
                         },
                         floatingActionButtonPosition = FabPosition.Center,
                     ) { paddingValues ->
-                        ReceiptList(
-                            receipts = reducedReceipts,
-                            lazyListState = listState,
-                            modifier = Modifier.padding(paddingValues))
+                        Column(
+                            modifier = Modifier.padding(paddingValues)
+                        ) {
+                            SearchTextField(
+                                onSearchQueryChanged = {},
+                                searchQuery = "",
+                                onSearchTriggered = {}
+                            )
+                            ReceiptList(
+                                receipts = reducedReceipts,
+                                lazyListState = listState,
+                            )
+                        }
 
                     }
                 }
