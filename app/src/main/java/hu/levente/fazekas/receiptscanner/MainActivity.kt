@@ -19,7 +19,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.EnumColumnAdapter
@@ -38,7 +41,7 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptCategory
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
-import hu.levente.fazekas.receiptscanner.presentation.SearchTextField
+import hu.levente.fazekas.receiptscanner.presentation.SearchBar
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
@@ -118,11 +121,15 @@ class MainActivity : ComponentActivity() {
                         Column(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            SearchTextField(
-                                onSearchQueryChanged = {},
-                                searchQuery = "",
-                                onSearchTriggered = {}
-                            )
+                            var searchQuery by rememberSaveable{
+                                mutableStateOf("")
+                            }
+                            SearchBar()
+//                            SearchTextField(
+//                                onSearchQueryChanged = { searchQuery = it },
+//                                searchQuery = searchQuery,
+//                                onSearchTriggered = {}
+//                            )
                             ReceiptList(
                                 receipts = reducedReceipts,
                                 lazyListState = listState,
