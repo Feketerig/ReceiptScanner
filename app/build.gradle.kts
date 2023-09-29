@@ -71,6 +71,7 @@ dependencies {
 
 
     implementation("com.google.accompanist:accompanist-flowlayout:0.28.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
     //Ktor
     implementation(libs.ktor.client.okhttp)

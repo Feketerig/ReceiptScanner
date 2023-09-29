@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,15 +27,18 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(
-    onSearchQueryChanged: (String) -> Unit,
     searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
     onSearchTriggered: (String) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val onSearchTriggeredByButton = {
         keyboardController?.hide()
+        focusManager.clearFocus()
         onSearchTriggered(searchQuery)
     }
+
     TextField(
         modifier = Modifier
             .padding(16.dp)
@@ -57,6 +61,7 @@ fun SearchTextField(
                 contentDescription = "Search",
 //                tint = MaterialTheme.colorScheme.onSurface,
             )
+
         },
         trailingIcon = {
             if (searchQuery.isNotEmpty()) {

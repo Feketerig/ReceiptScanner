@@ -39,7 +39,7 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun ReceiptList(
-    receipts: List<ReceiptCategory>,
+    receipts: List<Category>,
     lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -107,20 +107,20 @@ private fun CategoryItem(
                     Text(text = receipt.sumOfPrice.toString() + " " + receipt.currency.symbol)
                 }
                 FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    mainAxisSpacing = 8.dp,
-                    mainAxisSize = SizeMode.Wrap
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                mainAxisSpacing = 8.dp,
+                mainAxisSize = SizeMode.Wrap
                 ) {
-                    receipt.tags.forEach { tag ->
-                        SuggestionChip(
-                            onClick = { },
-                            label = { Text(text = tag.name) },
-                            shape = CircleShape
-                        )
-                    }
+                receipt.tags.forEach { tag ->
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(text = tag.name) },
+                        shape = CircleShape
+                    )
                 }
+            }
             }
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
@@ -134,7 +134,7 @@ private fun CategoryItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CategorizedLazyColumn(
-    receipts: List<ReceiptCategory>,
+    receipts: List<Category>,
     lazyListState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -146,7 +146,7 @@ private fun CategorizedLazyColumn(
             stickyHeader {
                 CategoryHeader(receiptCategory.headerText)
             }
-            items(receiptCategory.receipts) { receipt ->
+            items(receiptCategory.items) { receipt ->
                 CategoryItem(
                     receipt = receipt,
                     onItemClick = {}
@@ -156,9 +156,9 @@ private fun CategorizedLazyColumn(
     }
 }
 
-data class ReceiptCategory(
+data class Category(
     val headerText: String,
-    val receipts: List<ReducedReceiptEntity>
+    val items: List<ReducedReceiptEntity>
 )
 
 @Preview
@@ -168,9 +168,9 @@ fun ReceiptListPreview(){
     ReceiptList(
         lazyListState = listState,
         receipts = listOf(
-            ReceiptCategory(
+            Category(
                 headerText = "2023 Szeptember",
-                receipts = listOf(
+                items = listOf(
                     ReducedReceiptEntity(
                         id = 1,
                         name = "Auchan",
@@ -189,9 +189,9 @@ fun ReceiptListPreview(){
                     )
                 )
             ),
-            ReceiptCategory(
+            Category(
                 headerText = "2023 Augusztus",
-                receipts = listOf(
+                items = listOf(
                     ReducedReceiptEntity(
                         id = 1,
                         name = "Auchan",

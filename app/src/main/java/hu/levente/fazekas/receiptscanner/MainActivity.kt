@@ -3,6 +3,7 @@ package hu.levente.fazekas.receiptscanner
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -19,11 +21,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
@@ -38,16 +41,16 @@ import hu.levente.fazekas.receiptscanner.database.ReceiptEntity
 import hu.levente.fazekas.receiptscanner.database.SqlDelightItemCategoryDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightItemDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
+import hu.levente.fazekas.receiptscanner.database.SqlDelightTagDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
-import hu.levente.fazekas.receiptscanner.presentation.ReceiptCategory
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
+import hu.levente.fazekas.receiptscanner.presentation.ReceiptListViewModel
 import hu.levente.fazekas.receiptscanner.presentation.SearchBar
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +72,7 @@ class MainActivity : ComponentActivity() {
             )
         )
         val categoryDataSource = SqlDelightItemCategoryDataSource(db)
+        val tagDataSource = SqlDelightTagDataSource(db)
 //        categoryDataSource.insertCategory(defaultCategory)
 //        categoryDataSource.insertCategory(sampleCategory)
         val itemDataSource = SqlDelightItemDataSource(db)
@@ -76,18 +80,18 @@ class MainActivity : ComponentActivity() {
 //        receiptDataSource.insertReceipt(sampleReceipt)
 //        receiptDataSource.insertReceipt(sampleReceipt2)
 //        receiptDataSource.insertReceipt(sampleReceipt3)
-        val receipts = receiptDataSource.selectAllReducedReceipt()
-        val receipts1 = receipts + receipts +receipts + receipts + receipts + receipts + receipts
-        val reducedReceipts = receipts1.groupBy {
-            Sort(it.date.toLocalDateTime(TimeZone.currentSystemDefault()).year,it.date.toLocalDateTime(TimeZone.currentSystemDefault()).month)
-        }
-        .toSortedMap(compareByDescending<Sort> { it.year }.thenByDescending { it.month })
-            .map {
-                ReceiptCategory(
-                    headerText = it.key.year.toString() + " " + it.key.month.name,
-                    receipts = it.value
-                )
+        val viewModel by viewModels<ReceiptListViewModel> {
+            viewModelFactory {
+                initializer {
+                    val savedStateHandle = createSavedStateHandle()
+                    ReceiptListViewModel(
+                        receiptDataSource = receiptDataSource,
+                        tagDataSource = tagDataSource,
+                        savedStateHandle = savedStateHandle
+                    )
+                }
             }
+        }
         setContent {
             ReceiptScannerTheme {
                 Surface(
@@ -104,7 +108,7 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         floatingActionButton = {
                             ExtendedFloatingActionButton(
-                                onClick = { /*TODO*/ },
+                                onClick = { tagDataSource.insertTag("Aldi") },
                                 expanded = expandedFab,
                                 icon = {
                                     Icon(
@@ -121,15 +125,15 @@ class MainActivity : ComponentActivity() {
                         Column(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            var searchQuery by rememberSaveable{
-                                mutableStateOf("")
-                            }
-                            SearchBar()
-//                            SearchTextField(
-//                                onSearchQueryChanged = { searchQuery = it },
-//                                searchQuery = searchQuery,
-//                                onSearchTriggered = {}
-//                            )
+                            val tags by viewModel.tags.collectAsStateWithLifecycle()
+                            val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+                            val reducedReceipts by viewModel.searchresult.collectAsStateWithLifecycle()
+                            SearchBar(
+                                searchQuery = searchQuery,
+                                tags = tags,
+                                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                                onSearchTriggered = {}
+                            )
                             ReceiptList(
                                 receipts = reducedReceipts,
                                 lazyListState = listState,
