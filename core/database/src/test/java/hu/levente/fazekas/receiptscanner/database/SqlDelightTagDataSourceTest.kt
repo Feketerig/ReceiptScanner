@@ -9,6 +9,8 @@ import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,19 +40,20 @@ class SqlDelightTagDataSourceTest {
     }
 
     @Test
-    fun `Insert tag successfully`(){
+    fun `Insert tag successfully`() = runBlocking {
         tagRepository.insertTag(sampleTag.name)
 
-        val tags = tagRepository.selectAllTag()
+        val tags = tagRepository.selectAllTag().first()
         assertThat(tags).containsExactly(sampleTag)
     }
 
+
     @Test
-    fun `Insert 2 tags with the same name, throws exception`(){
+    fun `Insert 2 tags with the same name, throws exception`() = runBlocking {
         tagRepository.insertTag(sampleTag.name)
         tagRepository.insertTag(sampleTag.name)
 
-        val tags = tagRepository.selectAllTag()
+        val tags = tagRepository.selectAllTag().first()
         assertThat(tags).containsExactly(sampleTag)
     }
 
@@ -71,29 +74,29 @@ class SqlDelightTagDataSourceTest {
     }
 
     @Test
-    fun `Update tag name successfully`(){
+    fun `Update tag name successfully`() = runBlocking {
         tagRepository.insertTag(sampleTag.name)
         val newTag = TagEntity(1, "Aldi")
 
         tagRepository.updateTag(newTag)
 
 
-        val tags = tagRepository.selectAllTag()
+        val tags = tagRepository.selectAllTag().first()
         assertThat(tags).containsExactly(newTag)
     }
 
     @Test
-    fun `Delete tag, tagRepository becomes empty`(){
+    fun `Delete tag, tagRepository becomes empty`() = runBlocking {
         tagRepository.insertTag(sampleTag.name)
 
         tagRepository.deleteTag(sampleTag.id)
 
-        val tags = tagRepository.selectAllTag()
+        val tags = tagRepository.selectAllTag().first()
         assertThat(tags).isEmpty()
     }
 
     @Test
-    fun `Select tags by a receiptId`(){
+    fun `Select tags by a receiptId`() = runBlocking {
         tagRepository.insertTag(sampleTag.name)
         tagRepository.insertTag("NewTag")
         db.receiptQueries.insert(
@@ -106,7 +109,7 @@ class SqlDelightTagDataSourceTest {
         )
         db.receiptTagCrossRefQueries.insert(1, 1)
 
-        val allTags = tagRepository.selectAllTag()
+        val allTags = tagRepository.selectAllTag().first()
         val tagsByReceiptId = tagRepository.selectByReceiptId(1)
         assertThat(allTags).containsExactly(sampleTag, TagEntity(2,"NewTag"))
         assertThat(tagsByReceiptId).containsExactly(sampleTag)

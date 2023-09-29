@@ -1,6 +1,10 @@
 package hu.levente.fazekas.receiptscanner.database
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import hu.levente.fazekas.database.ReceiptDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 
 class SqlDelightReceiptDataSource(
     val db: ReceiptDatabase,
@@ -170,6 +174,24 @@ class SqlDelightReceiptDataSource(
                     tags = tags
                 )
             }.executeAsList()
+        }
+    }
+
+    fun selectAllReducedReceiptFlow(): Flow<List<ReducedReceiptEntity>> {
+        return db.transactionWithResult {
+            db.receiptQueries.selectAllReduced { id, name, date, currency, sumOfPrice ->
+                val tags = db.receiptTagCrossRefQueries.selectByReceiptId(id,
+                    mapper = {id, name -> TagEntity(id,name)}
+                ).executeAsList()
+                ReducedReceiptEntity(
+                    id = id,
+                    name = name,
+                    date = date,
+                    currency = currency,
+                    sumOfPrice = sumOfPrice,
+                    tags = tags
+                )
+            }.asFlow().mapToList(Dispatchers.IO)
         }
     }
 }
