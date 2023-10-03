@@ -23,9 +23,7 @@ class ReceiptListViewModel(
         it.groupBy {
             Sort(
                 it.date.toLocalDateTime(TimeZone.currentSystemDefault()).year,
-                it.date.toLocalDateTime(
-                    TimeZone.currentSystemDefault()
-                ).month
+                it.date.toLocalDateTime(TimeZone.currentSystemDefault()).month,
             )
         }
             .toSortedMap(compareByDescending<Sort> { it.year }.thenByDescending { it.month })

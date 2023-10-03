@@ -12,18 +12,18 @@ class SqlDelightReceiptDataSource(
 ) {
     fun insertReceipt(receipt: ReceiptEntity){
         db.transaction {
-            db.receiptQueries.insert(
+            val receiptId = db.receiptQueries.insert(
                 name = receipt.name,
                 date = receipt.date,
                 currency = receipt.currency,
                 sumOfPrice = receipt.sumOfPrice,
                 description = receipt.description,
                 imageUri = receipt.imageUri
-            )
+            ).executeAsOne()
             receipt.tags.forEach { tag ->
                 db.tagQueries.insert(tag.name)
                 db.receiptTagCrossRefQueries.insert(
-                    receiptId = receipt.id,
+                    receiptId = receiptId,
                     tagId = db.tagQueries.selectByName(tag.name).executeAsOne().id
                 )
             }

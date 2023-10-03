@@ -11,9 +11,11 @@ CREATE TABLE Receipt (
     imageUri TEXT NOT NULL
 );
 
-insert:
+insert{
 INSERT INTO Receipt( name, date, currency, sumOfPrice, description, imageUri)
 VALUES(?,?, ?,  ?,?,?);
+SELECT last_insert_rowid();
+}
 
 selectAllReduced:
 SELECT id, name, date, currency, sumOfPrice

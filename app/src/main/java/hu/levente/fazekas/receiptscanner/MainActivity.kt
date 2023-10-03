@@ -16,9 +16,12 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -27,6 +30,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.compose.rememberNavController
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
@@ -43,6 +49,7 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightItemDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightTagDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
+import hu.levente.fazekas.receiptscanner.navigation.TopLevelDestination
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptListViewModel
 import hu.levente.fazekas.receiptscanner.presentation.SearchBar
@@ -80,6 +87,8 @@ class MainActivity : ComponentActivity() {
 //        receiptDataSource.insertReceipt(sampleReceipt)
 //        receiptDataSource.insertReceipt(sampleReceipt2)
 //        receiptDataSource.insertReceipt(sampleReceipt3)
+//        receiptDataSource.insertReceipt(sampleReceipt4)
+        val receipts = receiptDataSource.selectAllReducedReceipt()
         val viewModel by viewModels<ReceiptListViewModel> {
             viewModelFactory {
                 initializer {
@@ -104,6 +113,7 @@ class MainActivity : ComponentActivity() {
                             listState.firstVisibleItemIndex == 0
                         }
                     }
+                    val navController = rememberNavController()
 
                     Scaffold(
                         floatingActionButton = {
@@ -121,6 +131,13 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         floatingActionButtonPosition = FabPosition.Center,
+                        bottomBar = {
+                            BottomAppBar(
+                                destinations = TopLevelDestination.entries,
+                                onNavigateToDestination = {},
+                                currentDestination = navController.currentDestination
+                            )
+                        }
                     ) { paddingValues ->
                         Column(
                             modifier = Modifier.padding(paddingValues)
@@ -147,9 +164,42 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun BottomAppBar(
+    destinations: List<TopLevelDestination>,
+    onNavigateToDestination: (TopLevelDestination) -> Unit,
+    currentDestination: NavDestination?,
+) {
+    NavigationBar {
+        destinations.forEach { destination ->
+            val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
+            NavigationBarItem(
+                selected = selected,
+                onClick = { onNavigateToDestination(destination) },
+                icon = {
+                    Icon(
+                        imageVector =
+                        if (selected)
+                            destination.selectedIcon
+                        else
+                            destination.unSelectedIcon,
+                        contentDescription = destination.title
+                    )
+                    },
+                label = { Text(text = destination.title) }
+            )
+        }
+    }
+}
+
+private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
+    this?.hierarchy?.any {
+        it.route?.contains(destination.name, true) ?: false
+    } ?: false
+
 data class Sort(
     val year: Int,
-    val month: Month
+    val month: Month,
 )
 
 val defaultCategory = ItemCategoryEntity(
@@ -235,6 +285,18 @@ val sampleReceipt3 = ReceiptEntity(
     id = 3,
     name = "Lidl",
     date = Instant.fromEpochSeconds(1659312000),
+    currency = Currency.HUF,
+    sumOfPrice = 5987,
+    description = "Egy példa blokk",
+    imageUri = "",
+    tags = listOf(sampleTag),
+    items = sampleItems
+)
+
+val sampleReceipt4 = ReceiptEntity(
+    id = 4,
+    name = "Aldi1",
+    date = Instant.fromEpochSeconds(1695718000),
     currency = Currency.HUF,
     sumOfPrice = 5987,
     description = "Egy példa blokk",

@@ -57,17 +57,6 @@ fun SearchBar(
                 searchQuery = searchQuery,
                 onSearchTriggered = onSearchTriggered
             )
-//            IconButton(onClick = { isExpended = !isExpended }) {
-//                Icon(
-//                    imageVector =
-//                    if (isExpended) {
-//                        Icons.Default.KeyboardArrowUp
-//                    } else {
-//                        Icons.Default.KeyboardArrowDown
-//                    },
-//                    contentDescription = "Expand search bar"
-//                )
-//            }
         }
         if (isExpended) {
             Row {
