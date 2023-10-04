@@ -74,6 +74,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.compose.material:material-icons-extended:1.5.1")
     implementation("androidx.navigation:navigation-compose:2.7.3")
+    implementation("co.yml:ycharts:2.1.0")
 
     //Ktor
     implementation(libs.ktor.client.okhttp)
