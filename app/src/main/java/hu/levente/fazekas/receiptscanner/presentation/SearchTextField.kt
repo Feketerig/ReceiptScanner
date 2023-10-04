@@ -29,15 +29,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchTextField(
     searchQuery: String,
-    onSearchQueryChanged: (String) -> Unit,
-    onSearchTriggered: (String) -> Unit
+    onSearchQueryChanged: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val onSearchTriggeredByButton = {
         keyboardController?.hide()
         focusManager.clearFocus()
-        onSearchTriggered(searchQuery)
     }
 
     TextField(
@@ -103,6 +101,5 @@ fun SearchTextFieldPreview() {
     SearchTextField(
         onSearchQueryChanged = {},
         searchQuery = "",
-        onSearchTriggered = {}
     )
 }

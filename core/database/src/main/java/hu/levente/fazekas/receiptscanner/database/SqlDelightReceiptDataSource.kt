@@ -159,9 +159,9 @@ class SqlDelightReceiptDataSource(
 //        }
     }
 
-    fun selectAllReducedReceipt(): List<ReducedReceiptEntity>{
+    fun selectAllReducedReceipt(query: String?): List<ReducedReceiptEntity>{
         return db.transactionWithResult {
-            db.receiptQueries.selectAllReduced { id, name, date, currency, sumOfPrice ->
+            db.receiptQueries.selectWithFilter(query?.let { "%$query%" }, emptyList()) { id, name, date, currency, sumOfPrice ->
                 val tags = db.receiptTagCrossRefQueries.selectByReceiptId(id,
                     mapper = {id, name -> TagEntity(id,name)}
                 ).executeAsList()
@@ -177,9 +177,11 @@ class SqlDelightReceiptDataSource(
         }
     }
 
-    fun selectAllReducedReceiptFlow(): Flow<List<ReducedReceiptEntity>> {
+    fun selectAllReducedReceiptFlow(query: String, tags: List<TagEntity>): Flow<List<ReducedReceiptEntity>> {
         return db.transactionWithResult {
-            db.receiptQueries.selectAllReduced { id, name, date, currency, sumOfPrice ->
+            val searchQuery = query.ifEmpty { null }.let { "%$query%" }
+            val searchTags = tags.ifEmpty { db.tagQueries.selectAll(mapper = {id, name -> TagEntity(id,name)}).executeAsList() }.map { it.id }
+            db.receiptQueries.selectWithFilter(searchQuery, searchTags)  { id, name, date, currency, sumOfPrice ->
                 val tags = db.receiptTagCrossRefQueries.selectByReceiptId(id,
                     mapper = {id, name -> TagEntity(id,name)}
                 ).executeAsList()

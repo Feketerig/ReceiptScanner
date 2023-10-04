@@ -49,6 +49,7 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightItemDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightTagDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
+import hu.levente.fazekas.receiptscanner.domain.ReceiptSearchUseCase
 import hu.levente.fazekas.receiptscanner.navigation.TopLevelDestination
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptListViewModel
@@ -57,7 +58,6 @@ import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
 
-@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +88,9 @@ class MainActivity : ComponentActivity() {
 //        receiptDataSource.insertReceipt(sampleReceipt2)
 //        receiptDataSource.insertReceipt(sampleReceipt3)
 //        receiptDataSource.insertReceipt(sampleReceipt4)
-        val receipts = receiptDataSource.selectAllReducedReceipt()
+//        receiptDataSource.insertReceipt(sampleReceipt5)
+        val receiptSearchUseCase = ReceiptSearchUseCase(receiptDataSource)
+        val receipts = db.receiptQueries.selectWithFilter("%li%", listOf(2)).executeAsList()
         val viewModel by viewModels<ReceiptListViewModel> {
             viewModelFactory {
                 initializer {
@@ -96,6 +98,7 @@ class MainActivity : ComponentActivity() {
                     ReceiptListViewModel(
                         receiptDataSource = receiptDataSource,
                         tagDataSource = tagDataSource,
+                        receiptSearchUseCase = receiptSearchUseCase,
                         savedStateHandle = savedStateHandle
                     )
                 }
@@ -144,12 +147,14 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val tags by viewModel.tags.collectAsStateWithLifecycle()
                             val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-                            val reducedReceipts by viewModel.searchresult.collectAsStateWithLifecycle()
+                            val reducedReceipts by viewModel.searchResult.collectAsStateWithLifecycle()
+                            val selectedTags by viewModel.selectedTags.collectAsStateWithLifecycle()
                             SearchBar(
                                 searchQuery = searchQuery,
                                 tags = tags,
+                                selectedTags = selectedTags,
                                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                                onSearchTriggered = {}
+                                onTagClicked = viewModel::onTagChange
                             )
                             ReceiptList(
                                 receipts = reducedReceipts,
@@ -257,6 +262,11 @@ val sampleTag = TagEntity(
     name = "Auchan"
 )
 
+val aldiTag = TagEntity(
+    id = 2,
+    name = "Aldi"
+)
+
 val sampleReceipt = ReceiptEntity(
     id = 1,
     name = "Auchan",
@@ -302,5 +312,17 @@ val sampleReceipt4 = ReceiptEntity(
     description = "Egy példa blokk",
     imageUri = "",
     tags = listOf(sampleTag),
+    items = sampleItems
+)
+
+val sampleReceipt5 = ReceiptEntity(
+    id = 5,
+    name = "Lidl1",
+    date = Instant.fromEpochSeconds(1695720000),
+    currency = Currency.HUF,
+    sumOfPrice = 5620,
+    description = "Egy példa blokk",
+    imageUri = "",
+    tags = listOf(aldiTag),
     items = sampleItems
 )

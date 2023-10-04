@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,8 +37,9 @@ import hu.levente.fazekas.receiptscanner.database.TagEntity
 fun SearchBar(
     searchQuery: String,
     tags: List<TagEntity>,
+    selectedTags: List<TagEntity>,
     onSearchQueryChanged: (String) -> Unit,
-    onSearchTriggered: (String) -> Unit
+    onTagClicked: (TagEntity) -> Unit
 ) {
     var isExpended by rememberSaveable {
         mutableStateOf(false)
@@ -55,7 +59,6 @@ fun SearchBar(
             SearchTextField(
                 onSearchQueryChanged = onSearchQueryChanged,
                 searchQuery = searchQuery,
-                onSearchTriggered = onSearchTriggered
             )
         }
         if (isExpended) {
@@ -79,10 +82,20 @@ fun SearchBar(
             ) {
                 tags.forEach { tag ->
                     FilterChip(
-                        onClick = { },
+                        onClick = { onTagClicked(tag) },
                         label = { Text(text = tag.name) },
                         shape = CircleShape,
-                        selected = true
+                        selected = selectedTags.contains(tag),
+                        leadingIcon = if (selectedTags.contains(tag)) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                )
+                            }
+                        } else {
+                            null
+                        }
                     )
                 }
             }

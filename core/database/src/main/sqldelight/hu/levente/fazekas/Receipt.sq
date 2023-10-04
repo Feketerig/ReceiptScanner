@@ -1,7 +1,7 @@
 import hu.levente.fazekas.receiptscanner.database.Currency;
 import kotlinx.datetime.Instant;
 
-CREATE TABLE Receipt (
+CREATE TABLE IF NOT EXISTS Receipt (
     id INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     date INTEGER AS Instant NOT NULL,
@@ -17,9 +17,20 @@ VALUES(?,?, ?,  ?,?,?);
 SELECT last_insert_rowid();
 }
 
-selectAllReduced:
+selectWithFilter:
 SELECT id, name, date, currency, sumOfPrice
 FROM Receipt
+WHERE
+((name LIKE :searchWord OR :searchWord IS NULL) OR
+(description LIKE :searchWord OR :searchWord IS NULL)) AND
+(id IN (SELECT receiptId FROM ReceiptTagCrossRef WHERE tagId IN :tags))
+ORDER BY date DESC;
+
+selectWithFilter1:
+SELECT id, name, date, currency, sumOfPrice
+FROM Receipt
+WHERE
+id IN (SELECT receiptId FROM ReceiptTagCrossRef WHERE tagId IN :tagIds)
 ORDER BY date DESC;
 
 selectById:
