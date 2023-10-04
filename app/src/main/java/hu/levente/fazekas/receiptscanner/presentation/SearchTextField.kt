@@ -1,6 +1,5 @@
 package hu.levente.fazekas.receiptscanner.presentation
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchTextField(
     searchQuery: String,
+    modifier: Modifier = Modifier,
     onSearchQueryChanged: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -39,8 +39,7 @@ fun SearchTextField(
     }
 
     TextField(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(16.dp)
             .onKeyEvent {
                 if (it.key == Key.Enter) {

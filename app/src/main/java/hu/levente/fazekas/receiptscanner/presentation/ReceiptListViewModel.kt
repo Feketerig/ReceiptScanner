@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ReceiptListViewModel(
     receiptDataSource: SqlDelightReceiptDataSource,
@@ -23,7 +23,7 @@ class ReceiptListViewModel(
 ): ViewModel() {
     val searchQuery = savedStateHandle.getStateFlow(key = "searchQuery", initialValue = "")
 
-    val selectedTags = MutableStateFlow(mutableListOf<TagEntity>())
+    val selectedTags = MutableStateFlow(listOf<TagEntity>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val searchResult = selectedTags.combine(searchQuery) { tags, query ->
@@ -46,16 +46,12 @@ class ReceiptListViewModel(
         savedStateHandle["searchQuery"] = query
     }
 
-    fun onTagChange(newTag: TagEntity){
-        if (selectedTags.value.contains(newTag)){
-            selectedTags.update {
-                it.remove(newTag)
-                it
-            }
-        }else{
-            selectedTags.update {
-                it.add(newTag)
-                it
+    fun onTagChange(newTag: TagEntity) {
+        viewModelScope.launch {
+            if (selectedTags.value.contains(newTag)) {
+                selectedTags.emit(selectedTags.value.minus(newTag))
+            } else {
+                selectedTags.emit(selectedTags.value.plus(newTag))
             }
         }
     }
