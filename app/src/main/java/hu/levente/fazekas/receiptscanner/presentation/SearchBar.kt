@@ -63,7 +63,8 @@ fun SearchBar(
         ) {
             SearchTextField(
                 onSearchQueryChanged = onSearchQueryChanged,
-                searchQuery = searchQuery
+                searchQuery = searchQuery,
+                modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { onAnalyticsClicked() }) {
                 Icon(imageVector = Icons.Default.Analytics, contentDescription = null)

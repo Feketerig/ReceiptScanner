@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -26,7 +25,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -50,10 +48,9 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightTagDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import hu.levente.fazekas.receiptscanner.domain.ReceiptSearchUseCase
+import hu.levente.fazekas.receiptscanner.navigation.NavHost
 import hu.levente.fazekas.receiptscanner.navigation.TopLevelDestination
-import hu.levente.fazekas.receiptscanner.presentation.ReceiptList
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptListViewModel
-import hu.levente.fazekas.receiptscanner.presentation.SearchBar
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
@@ -90,7 +87,7 @@ class MainActivity : ComponentActivity() {
 //        receiptDataSource.insertReceipt(sampleReceipt4)
 //        receiptDataSource.insertReceipt(sampleReceipt5)
         val receiptSearchUseCase = ReceiptSearchUseCase(receiptDataSource)
-        val receipts = db.receiptQueries.selectWithFilter("%li%", listOf(2)).executeAsList()
+        val receipts = db.receiptQueries.selectByTag().executeAsList()
         val viewModel by viewModels<ReceiptListViewModel> {
             viewModelFactory {
                 initializer {
@@ -145,20 +142,12 @@ class MainActivity : ComponentActivity() {
                         Column(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            val tags by viewModel.tags.collectAsStateWithLifecycle()
-                            val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-                            val reducedReceipts by viewModel.searchResult.collectAsStateWithLifecycle()
-                            val selectedTags by viewModel.selectedTags.collectAsStateWithLifecycle()
-                            SearchBar(
-                                searchQuery = searchQuery,
-                                tags = tags,
-                                selectedTags = selectedTags,
-                                onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                                onTagClicked = viewModel::onTagChange
-                            )
-                            ReceiptList(
-                                receipts = reducedReceipts,
-                                lazyListState = listState,
+                            NavHost(
+                                navController = navController,
+                                listState = listState,
+                                viewModel = viewModel,
+                                receiptDataSource = receiptDataSource,
+                                context = applicationContext
                             )
                         }
 
