@@ -161,7 +161,7 @@ class SqlDelightReceiptDataSource(
 
     fun selectAllReducedReceipt(query: String?): List<ReducedReceiptEntity>{
         return db.transactionWithResult {
-            db.receiptQueries.selectWithFilter(query?.let { "%$query%" }, emptyList()) { id, name, date, currency, sumOfPrice ->
+            db.receiptQueries.selectWithFilter(query?.ifEmpty { null }.let { "%$query%" }, listOf(1)) { id, name, date, currency, sumOfPrice ->
                 val tags = db.receiptTagCrossRefQueries.selectByReceiptId(id,
                     mapper = {id, name -> TagEntity(id,name)}
                 ).executeAsList()

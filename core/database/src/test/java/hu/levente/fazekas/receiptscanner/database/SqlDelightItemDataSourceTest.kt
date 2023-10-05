@@ -49,7 +49,7 @@ class SqlDelightItemDataSourceTest {
         categoryRepository.insertCategory(defaultCategory)
         categoryRepository.insertCategory(sampleCategory)
         //Inserting a receipt for the foreign key constrain
-        db.receiptQueries.insert(name = "", date = Instant.fromEpochSeconds(1), currency = Currency.HUF, sumOfPrice = 1, description = null, imageUri = "")
+        db.receiptQueries.insert(name = "", date = Instant.fromEpochSeconds(1), currency = Currency.HUF, sumOfPrice = 1, description = null, imageUri = "").executeAsOne()
     }
 
     @Test
@@ -225,7 +225,7 @@ class SqlDelightItemDataSourceTest {
     @Test
     fun `Select items by receiptId returns with good formatting and order`(){
         //inserting a fake receipt for foreign key constrains
-        db.receiptQueries.insert(name = "", date = Instant.fromEpochSeconds(1), currency = Currency.HUF, sumOfPrice = 1, description = null, imageUri = "")
+        db.receiptQueries.insert(name = "", date = Instant.fromEpochSeconds(1), currency = Currency.HUF, sumOfPrice = 1, description = null, imageUri = "").executeAsOne()
         val secondItem = sampleItem.copy(
             id = 2,
             date = Instant.fromEpochSeconds(2),

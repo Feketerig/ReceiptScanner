@@ -99,15 +99,16 @@ class SqlDelightTagDataSourceTest {
     fun `Select tags by a receiptId`() = runBlocking {
         tagRepository.insertTag(sampleTag.name)
         tagRepository.insertTag("NewTag")
-        db.receiptQueries.insert(
+        val id = db.receiptQueries.insert(
             name = "Test",
             date = Instant.fromEpochSeconds(1),
             currency = Currency.HUF,
             sumOfPrice = 1253,
             description = null,
             imageUri = ""
-        )
-        db.receiptTagCrossRefQueries.insert(1, 1)
+        ).executeAsOne()
+
+        db.receiptTagCrossRefQueries.insert(id, sampleTag.id)
 
         val allTags = tagRepository.selectAllTag().first()
         val tagsByReceiptId = tagRepository.selectByReceiptId(1)

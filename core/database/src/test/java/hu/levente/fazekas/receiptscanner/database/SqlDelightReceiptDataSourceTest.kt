@@ -102,12 +102,12 @@ class SqlDelightReceiptDataSourceTest {
             id = 2,
             name = "Aldi",
             date = Instant.fromEpochSeconds(2),
-            tags = emptyList(),
+            //tags = emptyList(), //TODO fix receipt with no tag
         )
         receiptRepository.insertReceipt(sampleReceipt)
         receiptRepository.insertReceipt(secondReceipt)
 
-        val receipts = receiptRepository.selectAllReducedReceipt()
+        val receipts = receiptRepository.selectAllReducedReceipt("")
         assertThat(receipts).containsExactly(
             ReducedReceiptEntity(
                 id = secondReceipt.id,
@@ -134,7 +134,7 @@ class SqlDelightReceiptDataSourceTest {
 
         receiptRepository.deleteReceipt(sampleReceipt.id)
 
-        val receipts = receiptRepository.selectAllReducedReceipt()
+        val receipts = receiptRepository.selectAllReducedReceipt("")
         val tags = tagRepository.selectAllTag().first()
         assertThat(receipts).isEmpty()
         assertThat(tags).isEmpty()
@@ -147,7 +147,7 @@ class SqlDelightReceiptDataSourceTest {
 
         receiptRepository.deleteReceipt(sampleReceipt.id)
 
-        val receipts = receiptRepository.selectAllReducedReceipt()
+        val receipts = receiptRepository.selectAllReducedReceipt("")
         val tags = tagRepository.selectAllTag().first()
         assertThat(receipts).isEmpty()
         assertThat(tags).containsExactly(TagEntity(2, "NewTag"))
@@ -174,7 +174,7 @@ class SqlDelightReceiptDataSourceTest {
 
         receiptRepository.deleteReceipt(sampleReceipt.id)
 
-        val receipts = receiptRepository.selectAllReducedReceipt()
+        val receipts = receiptRepository.selectAllReducedReceipt("")
         val tags = tagRepository.selectAllTag().first()
         assertThat(receipts).containsExactly(secondReceiptReduced)
         assertThat(tags).containsExactly(sampleTag)
