@@ -46,4 +46,7 @@ dependencies {
 
     //JVM SqlDelight driver for testing
     testImplementation(libs.sqlDelight.sqlite.driver)
+
+    //Coroutine test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 }

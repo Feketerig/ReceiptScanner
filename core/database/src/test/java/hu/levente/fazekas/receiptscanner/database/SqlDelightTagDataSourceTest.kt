@@ -5,25 +5,28 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Properties
 
-
 class SqlDelightTagDataSourceTest {
 
     private lateinit var db: ReceiptDatabase
-    private lateinit var tagRepository: SqlDelightTagDataSource
+    private lateinit var tagDataSource: TagDataSource
+    private val scope = TestScope()
 
     @BeforeEach
-    fun setUp() {
+    fun before() {
         val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY, schema = ReceiptDatabase.Schema, properties = Properties().apply { put("foreign_keys", "true") })
         db = ReceiptDatabase(
             driver = driver,
@@ -36,30 +39,30 @@ class SqlDelightTagDataSourceTest {
                 currencyAdapter = EnumColumnAdapter()
             )
         )
-        tagRepository = SqlDelightTagDataSource(db)
+        tagDataSource = SqlDelightTagDataSource(db, StandardTestDispatcher(scope.testScheduler))
     }
 
     @Test
-    fun `Insert tag successfully`() = runBlocking {
-        tagRepository.insertTag(sampleTag.name)
+    fun `Insert tag successfully`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
 
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagDataSource.selectAll().first()
         assertThat(tags).containsExactly(sampleTag)
     }
 
 
     @Test
-    fun `Insert 2 tags with the same name, throws exception`() = runBlocking {
-        tagRepository.insertTag(sampleTag.name)
-        tagRepository.insertTag(sampleTag.name)
+    fun `Insert 2 tags with the same name, second ignored`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
+        tagDataSource.insert(sampleTag.name)
 
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagDataSource.selectAll().first()
         assertThat(tags).containsExactly(sampleTag)
     }
 
     @Test
-    fun `Select all tags returns all the tags in good format`(){
-        tagRepository.insertTag(sampleTag.name)
+    fun `Select all tags returns all the tags in good format`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
 
         val tags = db.tagQueries.selectAll(
             mapper = { id, name ->
@@ -74,31 +77,31 @@ class SqlDelightTagDataSourceTest {
     }
 
     @Test
-    fun `Update tag name successfully`() = runBlocking {
-        tagRepository.insertTag(sampleTag.name)
+    fun `Update tag name successfully`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
         val newTag = TagEntity(1, "Aldi")
 
-        tagRepository.updateTag(newTag)
+        tagDataSource.update(newTag)
 
 
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagDataSource.selectAll().first()
         assertThat(tags).containsExactly(newTag)
     }
 
     @Test
-    fun `Delete tag, tagRepository becomes empty`() = runBlocking {
-        tagRepository.insertTag(sampleTag.name)
+    fun `Delete tag, tagRepository becomes empty`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
 
-        tagRepository.deleteTag(sampleTag.id)
+        tagDataSource.delete(sampleTag.id)
 
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagDataSource.selectAll().first()
         assertThat(tags).isEmpty()
     }
 
     @Test
-    fun `Select tags by a receiptId`() = runBlocking {
-        tagRepository.insertTag(sampleTag.name)
-        tagRepository.insertTag("NewTag")
+    fun `Select tags by a receiptId`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
+        tagDataSource.insert("NewTag")
         val id = db.receiptQueries.insert(
             name = "Test",
             date = Instant.fromEpochSeconds(1),
@@ -110,9 +113,17 @@ class SqlDelightTagDataSourceTest {
 
         db.receiptTagCrossRefQueries.insert(id, sampleTag.id)
 
-        val allTags = tagRepository.selectAllTag().first()
-        val tagsByReceiptId = tagRepository.selectByReceiptId(1)
+        val allTags = tagDataSource.selectAll().first()
+        val tagsByReceiptId = tagDataSource.selectByReceiptId(1).first()
         assertThat(allTags).containsExactly(sampleTag, TagEntity(2,"NewTag"))
         assertThat(tagsByReceiptId).containsExactly(sampleTag)
+    }
+
+    @Test
+    fun `Select tag by name`() = scope.runTest {
+        tagDataSource.insert(sampleTag.name)
+
+        val tags = tagDataSource.selectByName("Auchan").first()
+        assertThat(tags).isEqualTo(sampleTag)
     }
 }

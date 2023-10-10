@@ -16,6 +16,7 @@ import hu.levente.fazekas.receiptscanner.database.fake.sampleReceipt
 import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,32 +57,32 @@ class SqlDelightReceiptDataSourceTest {
     }
 
     @Test
-    fun `Insert Receipt with no tags successfully`(){
+    fun `Insert Receipt with no tags successfully`() = runTest {
         val receiptWithNoTags = sampleReceipt.copy(tags = emptyList())
         receiptRepository.insertReceipt(receiptWithNoTags)
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
         val items = itemRepository.selectAll()
-        val tags = tagRepository.selectByReceiptId(receipt.id)
+        val tags = tagRepository.selectByReceiptId(receipt.id).first()
         assertThat(receipt).isEqualTo(receiptWithNoTags)
         assertThat(items).containsExactly(*sampleItems.toTypedArray())
         assertThat(tags).isEmpty()
     }
 
     @Test
-    fun `Insert Receipt with tags successfully`(){
+    fun `Insert Receipt with tags successfully`() = runTest {
         receiptRepository.insertReceipt(sampleReceipt)
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
         val items = itemRepository.selectAll()
-        val tags = tagRepository.selectByReceiptId(receipt.id)
+        val tags = tagRepository.selectByReceiptId(receipt.id).first()
         assertThat(receipt).isEqualTo(sampleReceipt)
         assertThat(items).containsExactly(*sampleItems.toTypedArray())
         assertThat(tags).containsExactly(sampleTag)
     }
 
     @Test
-    fun `Insert Receipt with multiple tags successfully`(){
+    fun `Insert Receipt with multiple tags successfully`() = runTest {
         val newTag = TagEntity(2, "Aldi")
         val receiptWithMultipleTags = sampleReceipt.copy(
             tags = listOf(sampleTag, newTag)
@@ -90,7 +91,7 @@ class SqlDelightReceiptDataSourceTest {
 
         val receipt = receiptRepository.selectReceiptById(receiptWithMultipleTags.id)
         val items = itemRepository.selectAll()
-        val tags = tagRepository.selectByReceiptId(receipt.id)
+        val tags = tagRepository.selectByReceiptId(receipt.id).first()
         assertThat(receipt).isEqualTo(receiptWithMultipleTags)
         assertThat(items).containsExactly(*sampleItems.toTypedArray())
         assertThat(tags).containsExactly(sampleTag, newTag)
@@ -135,7 +136,7 @@ class SqlDelightReceiptDataSourceTest {
         receiptRepository.deleteReceipt(sampleReceipt.id)
 
         val receipts = receiptRepository.selectAllReducedReceipt("")
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagRepository.selectAll().first()
         assertThat(receipts).isEmpty()
         assertThat(tags).isEmpty()
     }
@@ -143,12 +144,12 @@ class SqlDelightReceiptDataSourceTest {
     @Test
     fun `Delete receipt with extra tag, receiptRepository becomes empty`() = runBlocking {
         receiptRepository.insertReceipt(sampleReceipt)
-        tagRepository.insertTag("NewTag")
+        tagRepository.insert("NewTag")
 
         receiptRepository.deleteReceipt(sampleReceipt.id)
 
         val receipts = receiptRepository.selectAllReducedReceipt("")
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagRepository.selectAll().first()
         assertThat(receipts).isEmpty()
         assertThat(tags).containsExactly(TagEntity(2, "NewTag"))
     }
@@ -175,7 +176,7 @@ class SqlDelightReceiptDataSourceTest {
         receiptRepository.deleteReceipt(sampleReceipt.id)
 
         val receipts = receiptRepository.selectAllReducedReceipt("")
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagRepository.selectAll().first()
         assertThat(receipts).containsExactly(secondReceiptReduced)
         assertThat(tags).containsExactly(sampleTag)
     }
@@ -204,7 +205,7 @@ class SqlDelightReceiptDataSourceTest {
         receiptRepository.updateReceipt(updatedReceipt)
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagRepository.selectAll().first()
         assertThat(receipt).isEqualTo(updatedReceipt)
         assertThat(tags).containsExactly(newTag)
     }
@@ -220,7 +221,7 @@ class SqlDelightReceiptDataSourceTest {
         receiptRepository.updateReceipt(updatedReceipt)
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagRepository.selectAll().first()
         assertThat(receipt).isEqualTo(updatedReceipt)
         assertThat(tags).containsExactly(sampleTag, newTag)
     }
@@ -236,7 +237,7 @@ class SqlDelightReceiptDataSourceTest {
         receiptRepository.updateReceipt(sampleReceipt)
 
         val receipt = receiptRepository.selectReceiptById(sampleReceipt.id)
-        val tags = tagRepository.selectAllTag().first()
+        val tags = tagRepository.selectAll().first()
         assertThat(receipt).isEqualTo(sampleReceipt)
         assertThat(tags).containsExactly(sampleTag)
     }
