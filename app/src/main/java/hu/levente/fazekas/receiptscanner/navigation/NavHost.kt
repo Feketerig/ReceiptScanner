@@ -3,6 +3,7 @@ package hu.levente.fazekas.receiptscanner.navigation
 import android.content.Context
 import android.graphics.Typeface
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ fun NavHost(
             val reducedReceipts by viewModel.searchResult.collectAsStateWithLifecycle()
             val selectedTags by viewModel.selectedTags.collectAsStateWithLifecycle()
             Column(
+                modifier = modifier.fillMaxSize()
             ) {
                 SearchBar(
                     searchQuery = searchQuery,

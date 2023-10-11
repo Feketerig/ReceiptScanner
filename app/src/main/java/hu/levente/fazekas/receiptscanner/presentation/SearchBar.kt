@@ -1,6 +1,5 @@
 package hu.levente.fazekas.receiptscanner.presentation
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,9 +44,6 @@ fun SearchBar(
     var isExpended by rememberSaveable {
         mutableStateOf(false)
     }
-//    var sortBy by rememberSaveable {
-//        mutableIntStateOf(0)
-//    }
     Column {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
         Row(
@@ -71,17 +66,6 @@ fun SearchBar(
             }
         }
         if (isExpended) {
-//            Row {
-//                Text(text = "Sort By: ")
-//                Spacer(modifier = Modifier.width(8.dp))
-//                RadioButtonWithText(text = "Date", isSelected = sortBy == 0) {
-//                    sortBy = 0
-//                }
-//                Spacer(modifier = Modifier.width(8.dp))
-//                RadioButtonWithText(text = "Name", isSelected = sortBy == 1) {
-//                    sortBy = 1
-//                }
-//            }
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,48 +95,3 @@ fun SearchBar(
         }
     }
 }
-
-@Composable
-fun RadioButtonWithText(
-    text: String,
-    isSelected: Boolean,
-    onClicked: () -> Unit
-) {
-    Row(
-        modifier = Modifier.clickable {
-            onClicked()
-        }
-    ) {
-        RadioButton(
-            selected = isSelected,
-            onClick = null
-        )
-        Text(text = text)
-    }
-
-}
-
-//val donutChartData = PieChartData(
-//    slices = listOf(
-//        PieChartData.Slice("HP", 15f, Color(0xFF5F0A87)),
-//        PieChartData.Slice("Dell", 30f, Color(0xFF20BF55)),
-//        PieChartData.Slice("Lenovo", 40f,  Color(0xFFEC9F05)),
-//        PieChartData.Slice("Asus", 10f, Color(0xFFF53844))
-//    ),
-//    plotType = PlotType.Donut
-//)
-//val donutChartConfig = PieChartConfig(
-////                percentVisible = true,
-////                percentageFontSize = 42.sp,
-//    strokeWidth = 120f,
-////                percentColor = Color.Black,
-//    activeSliceAlpha = .9f,
-//    isAnimationEnable = true
-//)
-//DonutPieChart(
-//modifier = Modifier
-//.fillMaxWidth()
-//.height(500.dp),
-//donutChartData,
-//donutChartConfig
-//)

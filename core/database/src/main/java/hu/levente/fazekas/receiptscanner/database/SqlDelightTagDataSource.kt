@@ -30,7 +30,7 @@ class SqlDelightTagDataSource(
     }
 
     override fun selectWithFilter(query: String): Flow<List<TagEntity>> {
-        return db.tagQueries.selectWithFilter(query,
+        return db.tagQueries.selectWithFilter(query.ifEmpty { null }.let { "%$query%" },
             mapper = { id, name -> TagEntity(id, name) }
         ).asFlow().mapToList(dispatcher)
     }

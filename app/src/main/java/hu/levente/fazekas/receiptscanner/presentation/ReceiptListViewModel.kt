@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,7 +37,10 @@ class ReceiptListViewModel(
             initialValue = emptyList(),
         )
 
-    val tags = tagDataSource.selectWithFilter(searchQuery.value).stateIn(
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tags = searchQuery.flatMapLatest{
+        tagDataSource.selectWithFilter(it)
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList(),
