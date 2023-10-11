@@ -29,6 +29,12 @@ class SqlDelightTagDataSource(
         ).asFlow().mapToOne(dispatcher)
     }
 
+    override fun selectWithFilter(query: String): Flow<List<TagEntity>> {
+        return db.tagQueries.selectWithFilter(query,
+            mapper = { id, name -> TagEntity(id, name) }
+        ).asFlow().mapToList(dispatcher)
+    }
+
     override suspend fun insert(tagName: String){
         db.tagQueries.insert(tagName)
     }

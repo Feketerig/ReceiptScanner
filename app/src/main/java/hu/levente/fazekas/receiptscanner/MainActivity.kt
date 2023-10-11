@@ -81,10 +81,10 @@ class MainActivity : ComponentActivity() {
 //        categoryDataSource.insertCategory(sampleCategory)
         val itemDataSource = SqlDelightItemDataSource(db)
         val receiptDataSource = SqlDelightReceiptDataSource(db, itemDataSource)
-//        receiptDataSource.insertReceipt(sampleReceipt)
-//        receiptDataSource.insertReceipt(sampleReceipt2)
-//        receiptDataSource.insertReceipt(sampleReceipt3)
-//        receiptDataSource.insertReceipt(sampleReceipt4)
+        receiptDataSource.insertReceipt(sampleReceipt)
+        receiptDataSource.insertReceipt(sampleReceipt2)
+        receiptDataSource.insertReceipt(sampleReceipt3)
+        receiptDataSource.insertReceipt(sampleReceipt4)
 //        receiptDataSource.insertReceipt(sampleReceipt5)
         val receiptSearchUseCase = ReceiptSearchUseCase(receiptDataSource)
         val receipts = db.receiptQueries.selectByTag().executeAsList()
@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         floatingActionButton = {
                             ExtendedFloatingActionButton(
-                                onClick = { tagDataSource.insertTag("Aldi") },
+                                onClick = {  },
                                 expanded = expandedFab,
                                 icon = {
                                     Icon(

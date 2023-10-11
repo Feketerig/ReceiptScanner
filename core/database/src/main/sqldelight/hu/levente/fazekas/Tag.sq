@@ -17,6 +17,10 @@ selectByName:
 SELECT * FROM Tag
 WHERE name = :name;
 
+selectWithFilter:
+SELECT * FROM Tag
+WHERE (name LIKE :searchWord OR :searchWord IS NULL);
+
 deleteById:
 DELETE FROM Tag
 WHERE id = :id;

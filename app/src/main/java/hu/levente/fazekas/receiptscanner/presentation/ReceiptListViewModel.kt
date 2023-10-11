@@ -36,7 +36,7 @@ class ReceiptListViewModel(
             initialValue = emptyList(),
         )
 
-    val tags = tagDataSource.selectAllTag().stateIn(
+    val tags = tagDataSource.selectWithFilter(searchQuery.value).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList(),

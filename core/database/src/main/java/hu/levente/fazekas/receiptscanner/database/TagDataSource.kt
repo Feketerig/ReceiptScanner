@@ -10,6 +10,8 @@ interface TagDataSource {
 
     fun selectByName(tagName: String): Flow<TagEntity>
 
+    fun selectWithFilter(query: String): Flow<List<TagEntity>>
+
     suspend fun insert(tagName: String)
 
     suspend fun delete(tagId: Long)
