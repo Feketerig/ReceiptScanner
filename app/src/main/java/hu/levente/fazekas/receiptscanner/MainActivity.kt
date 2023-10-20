@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -36,8 +37,8 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
+import hu.levente.fazekas.currency.Currency
 import hu.levente.fazekas.database.ReceiptDatabase
-import hu.levente.fazekas.receiptscanner.database.Currency
 import hu.levente.fazekas.receiptscanner.database.DateAdapter
 import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
 import hu.levente.fazekas.receiptscanner.database.ItemEntity
@@ -48,14 +49,15 @@ import hu.levente.fazekas.receiptscanner.database.SqlDelightReceiptDataSource
 import hu.levente.fazekas.receiptscanner.database.SqlDelightTagDataSource
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import hu.levente.fazekas.receiptscanner.domain.ReceiptSearchUseCase
-import hu.levente.fazekas.receiptscanner.navigation.NavHost
 import hu.levente.fazekas.receiptscanner.navigation.TopLevelDestination
 import hu.levente.fazekas.receiptscanner.presentation.ReceiptListViewModel
+import hu.levente.fazekas.receiptscanner.presentation.create_edit.CreateEditReceiptScreen
 import hu.levente.fazekas.receiptscanner.ui.theme.ReceiptScannerTheme
 import kotlinx.datetime.Instant
 import kotlinx.datetime.Month
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val db = ReceiptDatabase(
@@ -81,10 +83,10 @@ class MainActivity : ComponentActivity() {
 //        categoryDataSource.insertCategory(sampleCategory)
         val itemDataSource = SqlDelightItemDataSource(db)
         val receiptDataSource = SqlDelightReceiptDataSource(db, itemDataSource)
-        receiptDataSource.insertReceipt(sampleReceipt)
-        receiptDataSource.insertReceipt(sampleReceipt2)
-        receiptDataSource.insertReceipt(sampleReceipt3)
-        receiptDataSource.insertReceipt(sampleReceipt4)
+//        receiptDataSource.insertReceipt(sampleReceipt)
+//        receiptDataSource.insertReceipt(sampleReceipt2)
+//        receiptDataSource.insertReceipt(sampleReceipt3)
+//        receiptDataSource.insertReceipt(sampleReceipt4)
 //        receiptDataSource.insertReceipt(sampleReceipt5)
         val receiptSearchUseCase = ReceiptSearchUseCase(receiptDataSource)
         val receipts = db.receiptQueries.selectByTag().executeAsList()
@@ -118,7 +120,9 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         floatingActionButton = {
                             ExtendedFloatingActionButton(
-                                onClick = {  },
+                                onClick = {
+
+                                },
                                 expanded = expandedFab,
                                 icon = {
                                     Icon(
@@ -142,13 +146,14 @@ class MainActivity : ComponentActivity() {
                         Column(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            NavHost(
-                                navController = navController,
-                                listState = listState,
-                                viewModel = viewModel,
-                                receiptDataSource = receiptDataSource,
-                                context = applicationContext
-                            )
+                            CreateEditReceiptScreen()
+//                            NavHost(
+//                                navController = navController,
+//                                listState = listState,
+//                                viewModel = viewModel,
+//                                receiptDataSource = receiptDataSource,
+//                                context = applicationContext
+//                            )
                         }
 
                     }
@@ -229,7 +234,7 @@ val sampleItems = listOf(
         unit = "L",
         category = defaultCategory,
         date = Instant.fromEpochSeconds(2),
-        currency = Currency.HUF,
+        currency =Currency.HUF,
         receiptId = 1
     ),
     ItemEntity(

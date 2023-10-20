@@ -18,7 +18,7 @@ class SqlDelightReceiptDataSource(
                 currency = receipt.currency,
                 sumOfPrice = receipt.sumOfPrice,
                 description = receipt.description,
-                imageUri = receipt.imageUri
+                imageUri = receipt.imageUri ?: ""
             ).executeAsOne()
             receipt.tags.forEach { tag ->
                 db.tagQueries.insert(tag.name)
@@ -109,7 +109,7 @@ class SqlDelightReceiptDataSource(
                 currency = receipt.currency,
                 sumOfPrice = receipt.sumOfPrice,
                 description = receipt.description,
-                imageUri = receipt.imageUri
+                imageUri = receipt.imageUri ?: ""
             )
         }
     }
