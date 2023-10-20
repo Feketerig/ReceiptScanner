@@ -8,6 +8,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import hu.levente.fazekas.Item
 import hu.levente.fazekas.Receipt
+import hu.levente.fazekas.currency.Currency
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.sampleTag
 import kotlinx.coroutines.flow.first

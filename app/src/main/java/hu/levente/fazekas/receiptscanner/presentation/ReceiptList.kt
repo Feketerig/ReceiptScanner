@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.SizeMode
-import hu.levente.fazekas.receiptscanner.database.Currency
+import hu.levente.fazekas.currency.Currency
 import hu.levente.fazekas.receiptscanner.database.ReducedReceiptEntity
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import kotlinx.datetime.Instant
@@ -175,7 +175,7 @@ fun ReceiptListPreview(){
                         id = 1,
                         name = "Auchan",
                         date = Instant.fromEpochSeconds(1695717864),
-                        currency = Currency.HUF,
+                        currency = hu.levente.fazekas.currency.Currency.HUF,
                         sumOfPrice = 1235,
                         tags = listOf(TagEntity(1, "Auchan"))
                     ),
@@ -183,7 +183,7 @@ fun ReceiptListPreview(){
                         id = 1,
                         name = "Aldi",
                         date = Instant.fromEpochSeconds(1695650000),
-                        currency = Currency.HUF,
+                        currency = hu.levente.fazekas.currency.Currency.HUF,
                         sumOfPrice = 14849,
                         tags = listOf(TagEntity(1, "Aldi"))
                     )
@@ -196,7 +196,7 @@ fun ReceiptListPreview(){
                         id = 1,
                         name = "Auchan",
                         date = Instant.fromEpochSeconds(1690848000),
-                        currency = Currency.HUF,
+                        currency = hu.levente.fazekas.currency.Currency.HUF,
                         sumOfPrice = 512,
                         tags = emptyList()
                     ),
@@ -204,7 +204,7 @@ fun ReceiptListPreview(){
                         id = 1,
                         name = "Aldi",
                         date = Instant.fromEpochSeconds(1690848000),
-                        currency = Currency.HUF,
+                        currency = hu.levente.fazekas.currency.Currency.HUF,
                         sumOfPrice = 456,
                         tags = emptyList()
                     )

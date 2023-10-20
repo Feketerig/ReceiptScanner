@@ -10,6 +10,7 @@ import hu.levente.fazekas.Item
 import hu.levente.fazekas.ItemId
 import hu.levente.fazekas.LastPrice
 import hu.levente.fazekas.Receipt
+import hu.levente.fazekas.currency.Currency
 import hu.levente.fazekas.database.ReceiptDatabase
 import hu.levente.fazekas.receiptscanner.database.fake.defaultCategory
 import hu.levente.fazekas.receiptscanner.database.fake.sampleCategory

@@ -28,6 +28,7 @@ sqldelight{
 }
 
 dependencies {
+    implementation(project(":core:currency"))
     //SqlDelight
     implementation(libs.sqlDelight.primitive.adapters)
     implementation(libs.sqlDelight.paging3.extensions)

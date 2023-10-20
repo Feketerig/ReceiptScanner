@@ -1,6 +1,6 @@
 package hu.levente.fazekas.receiptscanner.database.fake
 
-import hu.levente.fazekas.receiptscanner.database.Currency
+import hu.levente.fazekas.receiptscanner.Currency
 import hu.levente.fazekas.receiptscanner.database.ItemCategoryEntity
 import hu.levente.fazekas.receiptscanner.database.ItemEntity
 import hu.levente.fazekas.receiptscanner.database.ReceiptEntity
@@ -28,7 +28,7 @@ val sampleItem = ItemEntity(
     unit = "L",
     category = sampleCategory,
     date = Instant.fromEpochSeconds(1),
-    currency = Currency.HUF,
+    currency = hu.levente.fazekas.receiptscanner.Currency.HUF,
     receiptId = 1
 )
 
@@ -42,7 +42,7 @@ val sampleItems = listOf(
         unit = "L",
         category = sampleCategory,
         date = Instant.fromEpochSeconds(3),
-        currency = Currency.HUF,
+        currency = hu.levente.fazekas.receiptscanner.Currency.HUF,
         receiptId = 1
     ),
     ItemEntity(
@@ -54,7 +54,7 @@ val sampleItems = listOf(
         unit = "L",
         category = defaultCategory,
         date = Instant.fromEpochSeconds(2),
-        currency = Currency.HUF,
+        currency = hu.levente.fazekas.receiptscanner.Currency.HUF,
         receiptId = 1
     ),
     ItemEntity(
@@ -66,7 +66,7 @@ val sampleItems = listOf(
         unit = "kg",
         category = sampleCategory,
         date = Instant.fromEpochSeconds(1),
-        currency = Currency.HUF,
+        currency = hu.levente.fazekas.receiptscanner.Currency.HUF,
         receiptId = 1
     )
 )
@@ -80,7 +80,7 @@ val sampleReceipt = ReceiptEntity(
     id = 1,
     name = "Auchan",
     date = Instant.fromEpochSeconds(1),
-    currency = Currency.HUF,
+    currency = hu.levente.fazekas.receiptscanner.Currency.HUF,
     sumOfPrice = 5987,
     description = "Egy példa blokk",
     imageUri = "",

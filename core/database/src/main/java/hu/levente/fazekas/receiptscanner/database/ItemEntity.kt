@@ -1,5 +1,6 @@
 package hu.levente.fazekas.receiptscanner.database
 
+import hu.levente.fazekas.currency.Currency
 import kotlinx.datetime.Instant
 
 data class ItemEntity(
