@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -30,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import hu.levente.fazekas.receiptscanner.R
 import hu.levente.fazekas.receiptscanner.database.ReceiptEntity
 import hu.levente.fazekas.receiptscanner.database.TagEntity
 import hu.levente.fazekas.receiptscanner.sampleReceipt
@@ -214,8 +215,8 @@ fun CreateEditReceipt(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Tag,
-                    contentDescription = "Tags"
+                    painter = painterResource(id = R.drawable.tag),
+                    contentDescription = "Tag"
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(text = "Tags")
