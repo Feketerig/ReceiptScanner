@@ -4,34 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.rememberNavController
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
@@ -109,54 +96,54 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val listState = rememberLazyListState()
-                    val expandedFab by remember {
-                        derivedStateOf {
-                            listState.firstVisibleItemIndex == 0
-                        }
-                    }
-                    val navController = rememberNavController()
-
-                    Scaffold(
-                        floatingActionButton = {
-                            ExtendedFloatingActionButton(
-                                onClick = {
-
-                                },
-                                expanded = expandedFab,
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add new receipt"
-                                    )
-                                },
-                                text = { Text(text = "Create receipt") },
-                                shape = CircleShape
-                            )
-                        },
-                        floatingActionButtonPosition = FabPosition.Center,
-                        bottomBar = {
-                            BottomAppBar(
-                                destinations = TopLevelDestination.entries,
-                                onNavigateToDestination = {},
-                                currentDestination = navController.currentDestination
-                            )
-                        }
-                    ) { paddingValues ->
-                        Column(
-                            modifier = Modifier.padding(paddingValues)
-                        ) {
-                            CreateEditReceiptScreen()
-//                            NavHost(
-//                                navController = navController,
-//                                listState = listState,
-//                                viewModel = viewModel,
-//                                receiptDataSource = receiptDataSource,
-//                                context = applicationContext
+                    CreateEditReceiptScreen()
+//                    val listState = rememberLazyListState()
+//                    val expandedFab by remember {
+//                        derivedStateOf {
+//                            listState.firstVisibleItemIndex == 0
+//                        }
+//                    }
+//                    val navController = rememberNavController()
+//
+//                    Scaffold(
+//                        floatingActionButton = {
+//                            ExtendedFloatingActionButton(
+//                                onClick = {
+//
+//                                },
+//                                expanded = expandedFab,
+//                                icon = {
+//                                    Icon(
+//                                        imageVector = Icons.Default.Add,
+//                                        contentDescription = "Add new receipt"
+//                                    )
+//                                },
+//                                text = { Text(text = "Create receipt") },
+//                                shape = CircleShape
 //                            )
-                        }
-
-                    }
+//                        },
+//                        floatingActionButtonPosition = FabPosition.Center,
+//                        bottomBar = {
+//                            BottomAppBar(
+//                                destinations = TopLevelDestination.entries,
+//                                onNavigateToDestination = {},
+//                                currentDestination = navController.currentDestination
+//                            )
+//                        }
+//                    ) { paddingValues ->
+//                        Column(
+//                            modifier = Modifier.padding(paddingValues)
+//                        ) {
+////                            NavHost(
+////                                navController = navController,
+////                                listState = listState,
+////                                viewModel = viewModel,
+////                                receiptDataSource = receiptDataSource,
+////                                context = applicationContext
+////                            )
+//                        }
+//
+//                    }
                 }
             }
         }
